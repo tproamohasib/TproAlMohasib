@@ -233,10 +233,11 @@
 
             const templateParams = {
                 to_name: 'فريق الدعم الفني',
-                from_name: document.getElementById('name').value + ' (' + document.getElementById('email').value + ')',
-                message: `
+                from_name: document.getElementById('name').value,
+                to_email: 'tproamohasib@gmail.com',
+                subject: document.getElementById('subject').options[document.getElementById('subject').selectedIndex].text,
+                message_html: `
 البريد الإلكتروني: ${document.getElementById('email').value}
-نوع الطلب: ${document.getElementById('subject').options[document.getElementById('subject').selectedIndex].text}
 
 الرسالة:
 ${document.getElementById('message').value}
