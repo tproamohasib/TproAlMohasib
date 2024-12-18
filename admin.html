@@ -35,6 +35,10 @@
                         <a class="nav-link" href="#messages">الرسائل</a>
                     </li>
                 </ul>
+                <button onclick="logout()" class="btn btn-outline-light">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    تسجيل الخروج
+                </button>
             </div>
         </div>
     </nav>
@@ -154,6 +158,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
     
     <script>
+        // التحقق من تسجيل الدخول
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'login.html';
+        }
+
         // تهيئة EmailJS
         emailjs.init("user_your_user_id");
 
