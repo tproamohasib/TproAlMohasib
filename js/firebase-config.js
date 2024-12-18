@@ -13,10 +13,12 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
+
+// تهيئة Firestore
 const db = firebase.firestore();
 
-// دالة لتسجيل عميل جديد
-async function registerCustomer(customerData) {
+// تصدير الدوال
+window.registerCustomer = async function(customerData) {
     try {
         const docRef = await db.collection('customers').add({
             ...customerData,
@@ -30,8 +32,7 @@ async function registerCustomer(customerData) {
     }
 }
 
-// دالة للحصول على قائمة العملاء
-async function getCustomers() {
+window.getCustomers = async function() {
     try {
         const snapshot = await db.collection('customers').get();
         return snapshot.docs.map(doc => ({
