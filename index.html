@@ -10,7 +10,7 @@
 </head>
 <body>
     <!-- القائمة العلوية -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">نظام ERP</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -22,45 +22,48 @@
                     <li class="nav-item"><a class="nav-link" href="#download">تحميل النسخة التجريبية</a></li>
                     <li class="nav-item"><a class="nav-link" href="#updates">التحديثات</a></li>
                     <li class="nav-item"><a class="nav-link" href="#support">الدعم الفني</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">اتصل بنا</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
     <!-- القسم الرئيسي -->
-    <header class="hero-section text-center py-5">
+    <header class="hero-section">
         <div class="container">
-            <h1 class="display-4">نظام ERP المتكامل لإدارة أعمالك</h1>
-            <p class="lead">حل متكامل لإدارة موارد مؤسستك بكفاءة عالية</p>
-            <a href="#download" class="btn btn-primary btn-lg">جرب النسخة التجريبية مجاناً</a>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="mb-4">نظام ERP المتكامل لإدارة أعمالك</h1>
+                    <p class="lead mb-5">حل متكامل لإدارة موارد مؤسستك بكفاءة عالية</p>
+                    <a href="#download" class="btn btn-light btn-lg px-5 py-3">جرب النسخة التجريبية مجاناً</a>
+                </div>
+            </div>
         </div>
     </header>
 
     <!-- قسم المميزات -->
     <section id="features" class="py-5">
         <div class="container">
-            <h2 class="text-center mb-4">مميزات النظام</h2>
+            <h2 class="text-center mb-5">مميزات النظام</h2>
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <div class="feature-card text-center p-4">
-                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                    <div class="feature-card text-center">
+                        <i class="fas fa-chart-line"></i>
                         <h3>إدارة المبيعات</h3>
-                        <p>تتبع المبيعات وإدارة العملاء بكفاءة عالية</p>
+                        <p>تتبع المبيعات وإدارة العملاء بكفاءة عالية مع تقارير تفصيلية</p>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <div class="feature-card text-center p-4">
-                        <i class="fas fa-warehouse fa-3x mb-3"></i>
+                    <div class="feature-card text-center">
+                        <i class="fas fa-warehouse"></i>
                         <h3>إدارة المخزون</h3>
-                        <p>تحكم كامل في المخزون والمستودعات</p>
+                        <p>تحكم كامل في المخزون والمستودعات مع نظام تنبيهات ذكي</p>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <div class="feature-card text-center p-4">
-                        <i class="fas fa-users fa-3x mb-3"></i>
+                    <div class="feature-card text-center">
+                        <i class="fas fa-users"></i>
                         <h3>شؤون الموظفين</h3>
-                        <p>إدارة شاملة للموارد البشرية</p>
+                        <p>إدارة شاملة للموارد البشرية والرواتب والإجازات</p>
                     </div>
                 </div>
             </div>
@@ -68,22 +71,17 @@
     </section>
 
     <!-- قسم التحميل -->
-    <section id="download" class="bg-light py-5">
+    <section id="download">
         <div class="container">
-            <h2 class="text-center mb-4">تحميل النسخة التجريبية</h2>
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body text-center">
-                            <h3>نسخة تجريبية مجانية</h3>
-                            <p>جرب النظام مجاناً لمدة 30 يوم</p>
+                            <h3 class="mb-4">نسخة تجريبية مجانية</h3>
+                            <p class="mb-4">جرب النظام مجاناً لمدة 30 يوم مع كامل المميزات</p>
                             <div class="download-options">
-                                <a href="downloads/erp_trial_windows.exe" class="btn btn-primary mb-2">
-                                    <i class="fab fa-windows"></i> تحميل لنظام Windows
-                                </a>
-                                <br>
-                                <a href="downloads/erp_trial_mac.dmg" class="btn btn-primary mb-2">
-                                    <i class="fab fa-apple"></i> تحميل لنظام Mac
+                                <a href="downloads/erp_trial_windows.exe" class="btn btn-primary btn-lg w-100">
+                                    <i class="fab fa-windows"></i> تحميل النسخة التجريبية
                                 </a>
                             </div>
                         </div>
@@ -94,25 +92,24 @@
     </section>
 
     <!-- قسم التحديثات -->
-    <section id="updates" class="py-5">
+    <section id="updates">
         <div class="container">
-            <h2 class="text-center mb-4">آخر التحديثات</h2>
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body text-center">
-                            <h3>التحديث الجديد v2.0</h3>
+                            <h3 class="mb-3">التحديث الجديد v2.0</h3>
                             <p class="version-date">تاريخ الإصدار: 18 ديسمبر 2024</p>
-                            <ul class="list-unstyled text-right update-features">
+                            <ul class="list-unstyled text-right update-features mb-4">
                                 <li><i class="fas fa-check text-success me-2"></i> تحسينات في واجهة المستخدم</li>
                                 <li><i class="fas fa-check text-success me-2"></i> إضافة تقارير جديدة</li>
                                 <li><i class="fas fa-check text-success me-2"></i> تحسين أداء النظام</li>
                             </ul>
                             <div class="download-options">
                                 <a href="https://drive.google.com/file/d/1E2jUGsoWS7Lbp3NUiVvqIua_XDZ3AgqV/view?usp=drive_link" 
-                                   class="btn btn-success btn-lg" 
+                                   class="btn btn-success btn-lg w-100" 
                                    target="_blank">
-                                    <i class="fas fa-download"></i> تحميل آخر تحديث
+                                    <i class="fas fa-download"></i> تحميل التحديث الجديد
                                 </a>
                             </div>
                         </div>
@@ -123,44 +120,48 @@
     </section>
 
     <!-- نموذج الدعم الفني -->
-    <section id="support" class="py-5">
+    <section id="support">
         <div class="container">
-            <h2 class="text-center mb-4">الدعم الفني</h2>
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <form id="supportForm">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">الاسم</label>
-                            <input type="text" class="form-control" id="name" required>
+                    <h2 class="text-center mb-5">الدعم الفني</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="supportForm">
+                                <div class="mb-4">
+                                    <label for="name" class="form-label">الاسم</label>
+                                    <input type="text" class="form-control" id="name" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="email" class="form-label">البريد الإلكتروني</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="subject" class="form-label">الموضوع</label>
+                                    <select class="form-control" id="subject" required>
+                                        <option value="">اختر نوع الطلب</option>
+                                        <option value="technical">مشكلة تقنية</option>
+                                        <option value="activation">طلب تفعيل</option>
+                                        <option value="feature">طلب إضافة ميزة</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="message" class="form-label">الرسالة</label>
+                                    <textarea class="form-control" id="message" rows="5" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100">إرسال الطلب</button>
+                            </form>
                         </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">البريد الإلكتروني</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="subject" class="form-label">الموضوع</label>
-                            <select class="form-control" id="subject" required>
-                                <option value="">اختر نوع الطلب</option>
-                                <option value="technical">مشكلة تقنية</option>
-                                <option value="activation">طلب تفعيل</option>
-                                <option value="feature">طلب إضافة ميزة</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label">الرسالة</label>
-                            <textarea class="form-control" id="message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">إرسال</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- التذييل -->
-    <footer class="bg-dark text-light py-4">
-        <div class="container text-center">
-            <p>&copy; 2024 نظام ERP. جميع الحقوق محفوظة</p>
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">&copy; 2024 نظام ERP. جميع الحقوق محفوظة</p>
         </div>
     </footer>
 
