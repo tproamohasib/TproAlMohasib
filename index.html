@@ -243,6 +243,9 @@ ${document.getElementById('message').value}
 `
             };
 
+            console.log('Public Key:', 'TZyQK3BFL1MACjAn3');
+            console.log('Service ID:', 'service_y4m1c0s');
+            console.log('Template ID:', 'template_g1r10f8');
             console.log('Sending email with params:', templateParams);
 
             emailjs.send('service_y4m1c0s', 'template_g1r10f8', templateParams)
@@ -253,6 +256,12 @@ ${document.getElementById('message').value}
                 }, function(error) {
                     console.log('FAILED...', error);
                     alert('حدث خطأ أثناء إرسال الطلب. الخطأ: ' + JSON.stringify(error));
+                    console.error('Error details:', {
+                        status: error.status,
+                        text: error.text,
+                        name: error.name,
+                        message: error.message
+                    });
                 })
                 .finally(function() {
                     btn.disabled = false;
