@@ -217,13 +217,15 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // https://dashboard.emailjs.com/admin/account
+            // تأكد من تهيئة EmailJS
             emailjs.init("TZyQK3BFL1MACjAn3");
+            console.log('EmailJS initialized');
         })();
     </script>
     <script>
         document.getElementById('supportForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Form submitted');
             
             const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true;
@@ -241,6 +243,8 @@ ${document.getElementById('message').value}
 `
             };
 
+            console.log('Sending email with params:', templateParams);
+
             emailjs.send('service_y4m1c0s', 'template_rl0a2h2', templateParams)
                 .then(function(response) {
                     console.log('SUCCESS!', response.status, response.text);
@@ -248,7 +252,7 @@ ${document.getElementById('message').value}
                     document.getElementById('supportForm').reset();
                 }, function(error) {
                     console.log('FAILED...', error);
-                    alert('حدث خطأ أثناء إرسال الطلب: ' + error.text);
+                    alert('حدث خطأ أثناء إرسال الطلب. الخطأ: ' + JSON.stringify(error));
                 })
                 .finally(function() {
                     btn.disabled = false;
