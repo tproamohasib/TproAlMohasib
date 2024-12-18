@@ -46,12 +46,20 @@
                                     <input type="text" class="form-control" id="name" required>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="companyName" class="form-label">اسم الشركة</label>
+                                    <input type="text" class="form-control" id="companyName">
+                                </div>
+                                <div class="mb-3">
                                     <label for="email" class="form-label">البريد الإلكتروني</label>
                                     <input type="email" class="form-control" id="email" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">رقم الهاتف</label>
                                     <input type="tel" class="form-control" id="phone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">العنوان</label>
+                                    <textarea class="form-control" id="address" rows="2"></textarea>
                                 </div>
                                 <div class="mb-3">
                                     <label for="version" class="form-label">نوع النسخة</label>
@@ -62,12 +70,8 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <a href="https://drive.google.com/file/d/13Bh-kUH8czvpRtJR42Qice8Lb7IBtAi4/view?usp=drive_link" 
-                                       class="btn btn-success" 
-                                       target="_blank">
-                                        <i class="fas fa-download"></i>
-                                        تحميل النسخة التجريبية
-                                    </a>
+                                    <label for="notes" class="form-label">ملاحظات</label>
+                                    <textarea class="form-control" id="notes" rows="3"></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary">تسجيل العميل</button>
                             </form>
@@ -82,15 +86,29 @@
                             <h5 class="card-title mb-0">قائمة العملاء</h5>
                         </div>
                         <div class="card-body">
+                            <div class="mb-3">
+                                <button id="exportExcel" class="btn btn-success me-2">
+                                    <i class="fas fa-file-excel me-1"></i> تصدير Excel
+                                </button>
+                                <button id="exportPDF" class="btn btn-danger me-2">
+                                    <i class="fas fa-file-pdf me-1"></i> تصدير PDF
+                                </button>
+                                <button id="printList" class="btn btn-primary">
+                                    <i class="fas fa-print me-1"></i> طباعة
+                                </button>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
                                         <tr>
                                             <th>الاسم</th>
+                                            <th>الشركة</th>
                                             <th>البريد الإلكتروني</th>
                                             <th>رقم الهاتف</th>
+                                            <th>العنوان</th>
                                             <th>النسخة</th>
                                             <th>تاريخ التسجيل</th>
+                                            <th>الإجراءات</th>
                                         </tr>
                                     </thead>
                                     <tbody id="customersList">
@@ -127,9 +145,12 @@
             
             const customerData = {
                 name: document.getElementById('name').value,
+                companyName: document.getElementById('companyName').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
-                version: document.getElementById('version').value
+                address: document.getElementById('address').value,
+                version: document.getElementById('version').value,
+                notes: document.getElementById('notes').value
             };
 
             try {
@@ -155,10 +176,16 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${customer.name}</td>
+                    <td>${customer.companyName}</td>
                     <td>${customer.email}</td>
                     <td>${customer.phone}</td>
+                    <td>${customer.address}</td>
                     <td>${customer.version}</td>
                     <td>${customer.registrationDate ? new Date(customer.registrationDate.toDate()).toLocaleString('ar-SA') : ''}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger">حذف</button>
+                        <button class="btn btn-sm btn-primary">تعديل</button>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
