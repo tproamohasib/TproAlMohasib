@@ -230,19 +230,25 @@
             btn.innerHTML = 'جاري الإرسال...';
 
             const templateParams = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                subject: document.getElementById('subject').options[document.getElementById('subject').selectedIndex].text,
-                message: document.getElementById('message').value
+                to_name: 'فريق الدعم الفني',
+                from_name: document.getElementById('name').value,
+                message: `
+البريد الإلكتروني: ${document.getElementById('email').value}
+نوع الطلب: ${document.getElementById('subject').options[document.getElementById('subject').selectedIndex].text}
+
+الرسالة:
+${document.getElementById('message').value}
+`
             };
 
             emailjs.send('service_y4m1c0s', 'template_rl0a2h2', templateParams)
-                .then(function() {
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
                     alert('تم إرسال طلبك بنجاح! سنتواصل معك قريباً');
                     document.getElementById('supportForm').reset();
                 }, function(error) {
-                    alert('حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى أو التواصل معنا مباشرة');
-                    console.error('Error:', error);
+                    console.log('FAILED...', error);
+                    alert('حدث خطأ أثناء إرسال الطلب: ' + error.text);
                 })
                 .finally(function() {
                     btn.disabled = false;
