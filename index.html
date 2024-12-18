@@ -234,19 +234,9 @@
             const templateParams = {
                 to_name: 'فريق الدعم الفني',
                 from_name: document.getElementById('name').value,
-                to_email: 'tproamohasib@gmail.com',
-                subject: document.getElementById('subject').options[document.getElementById('subject').selectedIndex].text,
-                message_html: `
-البريد الإلكتروني: ${document.getElementById('email').value}
-
-الرسالة:
-${document.getElementById('message').value}
-`
+                message: document.getElementById('message').value
             };
 
-            console.log('Public Key:', 'TZyQK3BFL1MACjAn3');
-            console.log('Service ID:', 'service_y4m1c0s');
-            console.log('Template ID:', 'template_fmrmykj');
             console.log('Sending email with params:', templateParams);
 
             emailjs.send('service_y4m1c0s', 'template_fmrmykj', templateParams)
