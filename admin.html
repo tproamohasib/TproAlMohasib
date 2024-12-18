@@ -174,43 +174,57 @@
 
         // تحديث الإحصائيات
         async function updateStats() {
-            const customers = await getCustomers();
-            document.getElementById('totalCustomers').textContent = customers.length;
-            
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            const todayCustomers = customers.filter(c => c.downloadDate.toDate() >= today);
-            document.getElementById('todayDownloads').textContent = todayCustomers.length;
-            
-            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-            const monthlyCustomers = customers.filter(c => c.downloadDate.toDate() >= monthStart);
-            document.getElementById('monthlyDownloads').textContent = monthlyCustomers.length;
+            try {
+                const customers = await getCustomers();
+                document.getElementById('totalCustomers').textContent = customers.length;
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const todayCustomers = customers.filter(c => {
+                    const downloadDate = c.downloadDate.toDate();
+                    return downloadDate >= today;
+                });
+                document.getElementById('todayDownloads').textContent = todayCustomers.length;
+                
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const monthlyCustomers = customers.filter(c => {
+                    const downloadDate = c.downloadDate.toDate();
+                    return downloadDate >= monthStart;
+                });
+                document.getElementById('monthlyDownloads').textContent = monthlyCustomers.length;
+            } catch (error) {
+                console.error('خطأ في تحديث الإحصائيات:', error);
+            }
         }
 
         // عرض قائمة العملاء
         async function displayCustomers() {
-            const customers = await getCustomers();
-            const tbody = document.getElementById('customersList');
-            tbody.innerHTML = '';
-            
-            customers.forEach(customer => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${customer.name}</td>
-                    <td>${customer.companyName || '-'}</td>
-                    <td>${customer.email}</td>
-                    <td>${customer.phone}</td>
-                    <td>${customer.version}</td>
-                    <td>${customer.downloadDate.toDate().toLocaleString('ar-SA')}</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary" onclick="sendEmail('${customer.email}')">
-                            <i class="fas fa-envelope"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
+            try {
+                const customers = await getCustomers();
+                const tbody = document.getElementById('customersList');
+                tbody.innerHTML = '';
+                
+                customers.forEach(customer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${customer.name}</td>
+                        <td>${customer.companyName || '-'}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone}</td>
+                        <td>${customer.version}</td>
+                        <td>${customer.downloadDate.toDate().toLocaleString('ar-SA')}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="sendEmail('${customer.email}')">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('خطأ في عرض العملاء:', error);
+            }
         }
 
         // إرسال رسالة لعميل واحد
@@ -273,20 +287,26 @@
         });
 
         // تصدير إلى Excel
-        function exportToExcel() {
-            const customers = await getCustomers();
-            const ws = XLSX.utils.json_to_sheet(customers.map(c => ({
-                'الاسم': c.name,
-                'الشركة': c.companyName || '-',
-                'البريد الإلكتروني': c.email,
-                'رقم الهاتف': c.phone,
-                'النسخة': c.version,
-                'تاريخ التحميل': c.downloadDate.toDate().toLocaleString('ar-SA')
-            })));
-            
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Customers");
-            XLSX.writeFile(wb, "tpro_customers.xlsx");
+        async function exportToExcel() {
+            try {
+                const customers = await getCustomers();
+                const data = customers.map(c => ({
+                    'الاسم': c.name,
+                    'الشركة': c.companyName || '-',
+                    'البريد الإلكتروني': c.email,
+                    'رقم الهاتف': c.phone,
+                    'النسخة': c.version,
+                    'تاريخ التحميل': c.downloadDate.toDate().toLocaleString('ar-SA')
+                }));
+                
+                const ws = XLSX.utils.json_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Customers");
+                XLSX.writeFile(wb, "tpro_customers.xlsx");
+            } catch (error) {
+                console.error('خطأ في تصدير البيانات:', error);
+                alert('حدث خطأ أثناء تصدير البيانات');
+            }
         }
 
         // تحديث البيانات عند تحميل الصفحة
