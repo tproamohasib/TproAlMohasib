@@ -175,21 +175,21 @@
         // تحديث الإحصائيات
         async function updateStats() {
             try {
-                const customers = await getCustomers();
+                const customers = await window.getCustomers();
                 document.getElementById('totalCustomers').textContent = customers.length;
                 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 
                 const todayCustomers = customers.filter(c => {
-                    const downloadDate = c.downloadDate.toDate();
+                    const downloadDate = new Date(c.downloadDate);
                     return downloadDate >= today;
                 });
                 document.getElementById('todayDownloads').textContent = todayCustomers.length;
                 
                 const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
                 const monthlyCustomers = customers.filter(c => {
-                    const downloadDate = c.downloadDate.toDate();
+                    const downloadDate = new Date(c.downloadDate);
                     return downloadDate >= monthStart;
                 });
                 document.getElementById('monthlyDownloads').textContent = monthlyCustomers.length;
@@ -201,19 +201,19 @@
         // عرض قائمة العملاء
         async function displayCustomers() {
             try {
-                const customers = await getCustomers();
+                const customers = await window.getCustomers();
                 const tbody = document.getElementById('customersList');
                 tbody.innerHTML = '';
                 
                 customers.forEach(customer => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${customer.name}</td>
+                        <td>${customer.name || ''}</td>
                         <td>${customer.companyName || '-'}</td>
-                        <td>${customer.email}</td>
-                        <td>${customer.phone}</td>
-                        <td>${customer.version}</td>
-                        <td>${customer.downloadDate.toDate().toLocaleString('ar-SA')}</td>
+                        <td>${customer.email || ''}</td>
+                        <td>${customer.phone || ''}</td>
+                        <td>${customer.version || ''}</td>
+                        <td>${new Date(customer.downloadDate).toLocaleString('ar-SA')}</td>
                         <td>
                             <button class="btn btn-sm btn-primary" onclick="sendEmail('${customer.email}')">
                                 <i class="fas fa-envelope"></i>
@@ -224,6 +224,7 @@
                 });
             } catch (error) {
                 console.error('خطأ في عرض العملاء:', error);
+                alert('حدث خطأ في عرض قائمة العملاء');
             }
         }
 
@@ -261,7 +262,7 @@
             const content = document.getElementById('messageContent').value;
             
             try {
-                const customers = await getCustomers();
+                const customers = await window.getCustomers();
                 const filteredCustomers = type === 'all' ? 
                     customers : 
                     customers.filter(c => c.version === type);
@@ -289,14 +290,14 @@
         // تصدير إلى Excel
         async function exportToExcel() {
             try {
-                const customers = await getCustomers();
+                const customers = await window.getCustomers();
                 const data = customers.map(c => ({
-                    'الاسم': c.name,
+                    'الاسم': c.name || '',
                     'الشركة': c.companyName || '-',
-                    'البريد الإلكتروني': c.email,
-                    'رقم الهاتف': c.phone,
-                    'النسخة': c.version,
-                    'تاريخ التحميل': c.downloadDate.toDate().toLocaleString('ar-SA')
+                    'البريد الإلكتروني': c.email || '',
+                    'رقم الهاتف': c.phone || '',
+                    'النسخة': c.version || '',
+                    'تاريخ التحميل': new Date(c.downloadDate).toLocaleString('ar-SA')
                 }));
                 
                 const ws = XLSX.utils.json_to_sheet(data);
@@ -311,6 +312,7 @@
 
         // تحديث البيانات عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('تحميل الصفحة...');
             updateStats();
             displayCustomers();
             
