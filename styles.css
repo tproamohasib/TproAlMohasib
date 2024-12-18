@@ -161,6 +161,65 @@ body {
     background: linear-gradient(to bottom right, #ffffff, var(--light-bg));
 }
 
+.support-info {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    height: 100%;
+}
+
+.support-info h3 {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.support-info ul li {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.support-info ul li i {
+    font-size: 1.2rem;
+}
+
+.support-contact {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+}
+
+.support-contact h4 {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.support-contact a {
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+.support-contact a:hover {
+    color: var(--secondary-color);
+}
+
+#supportForm .form-control {
+    padding: 0.8rem;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+#supportForm .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+}
+
+#supportForm .btn-primary {
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
 .form-control {
     padding: 1rem;
     border-radius: 12px;
