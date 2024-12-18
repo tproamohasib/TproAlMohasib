@@ -10,7 +10,9 @@ const firebaseConfig = {
 };
 
 // تهيئة Firebase
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.firestore();
 
 // دالة لتسجيل عميل جديد
