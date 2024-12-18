@@ -233,7 +233,7 @@
 
             const templateParams = {
                 to_name: 'فريق الدعم الفني',
-                from_name: document.getElementById('name').value,
+                from_name: document.getElementById('name').value + ' (' + document.getElementById('email').value + ')',
                 message: `
 البريد الإلكتروني: ${document.getElementById('email').value}
 نوع الطلب: ${document.getElementById('subject').options[document.getElementById('subject').selectedIndex].text}
