@@ -1,0 +1,116 @@
+/* التنسيقات العامة */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* قسم الرئيسية */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0;
+}
+
+/* بطاقات المميزات */
+.feature-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.feature-card i {
+    color: #007bff;
+}
+
+/* نموذج الدعم */
+form {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* تنسيق الأزرار */
+.btn-primary {
+    padding: 10px 25px;
+    border-radius: 25px;
+}
+
+/* تحسينات للتجاوب */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 50px 0;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+}
+
+/* تنسيقات إضافية للنص العربي */
+.navbar-nav {
+    margin-right: auto;
+    margin-left: 0 !important;
+}
+
+.navbar-brand {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+/* تحسين مظهر النماذج */
+.form-control {
+    padding: 0.75rem;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+/* تنسيق قسم التحميل */
+#download .card {
+    transition: transform 0.3s ease;
+}
+
+#download .card:hover {
+    transform: translateY(-5px);
+}
+
+/* تنسيق قسم التحديثات */
+.update-features {
+    text-align: right;
+    margin: 20px 0;
+}
+
+.update-features li {
+    margin-bottom: 10px;
+}
+
+.version-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    padding: 10px 25px;
+    border-radius: 25px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* تنسيق التذييل */
+footer {
+    margin-top: 50px;
+}
