@@ -245,7 +245,7 @@
     
     <script>
         // تهيئة EmailJS
-        emailjs.init("YOUR_USER_ID");
+        emailjs.init("user_your_user_id");
 
         // معالجة نموذج التحميل
         document.getElementById('downloadForm').addEventListener('submit', async function(e) {
@@ -266,8 +266,8 @@
 
                 // إرسال بريد ترحيبي
                 await emailjs.send(
-                    "service_id",
-                    "template_id",
+                    "service_tpro",
+                    "template_tpro",
                     {
                         to_name: customerData.name,
                         to_email: customerData.email,

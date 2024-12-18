@@ -155,7 +155,7 @@
     
     <script>
         // تهيئة EmailJS
-        emailjs.init("YOUR_USER_ID");
+        emailjs.init("user_your_user_id");
 
         // تحديث الإحصائيات
         async function updateStats() {
@@ -208,8 +208,8 @@
             
             try {
                 await emailjs.send(
-                    "service_id",
-                    "template_id",
+                    "service_tpro",
+                    "template_tpro",
                     {
                         to_email: email,
                         subject: subject,
@@ -239,8 +239,8 @@
                 
                 for (const customer of filteredCustomers) {
                     await emailjs.send(
-                        "service_id",
-                        "template_id",
+                        "service_tpro",
+                        "template_tpro",
                         {
                             to_email: customer.email,
                             subject: subject,
