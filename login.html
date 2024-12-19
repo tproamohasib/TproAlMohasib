@@ -49,6 +49,7 @@
                             <label for="password" class="form-label">كلمة المرور</label>
                             <input type="password" class="form-control" id="password" required>
                         </div>
+                        <div id="loginError" style="display: none; color: red;"></div>
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-sign-in-alt me-2"></i>
                             دخول
@@ -60,20 +61,28 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
             
-            // بيانات الدخول الافتراضية
-            if (username === 'admin' && password === 'tpro2024') {
-                // تخزين حالة تسجيل الدخول
-                localStorage.setItem('isLoggedIn', 'true');
-                // الانتقال إلى لوحة التحكم
-                window.location.href = 'admin.html';
-            } else {
-                alert('اسم المستخدم أو كلمة المرور غير صحيحة');
+            // إعادة تعيين رسائل الخطأ
+            errorDiv.textContent = '';
+            errorDiv.style.display = 'none';
+            
+            try {
+                // محاولة تسجيل الدخول
+                const loginResult = await window.adminLogin(password);
+                
+                if (loginResult) {
+                    // التوجيه إلى صفحة الإدارة
+                    window.location.href = 'admin.html';
+                }
+            } catch (error) {
+                console.error('خطأ في تسجيل الدخول:', error);
+                errorDiv.textContent = error.message || 'خطأ في تسجيل الدخول';
+                errorDiv.style.display = 'block';
             }
         });
     </script>

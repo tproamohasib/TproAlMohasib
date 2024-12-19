@@ -99,6 +99,41 @@ window.updateIndexVersion = async function(version) {
     }
 }
 
+// دالة تسجيل دخول المسؤول
+window.adminLogin = async function(password) {
+    try {
+        // التحقق من صحة المدخلات
+        if (!password) {
+            throw new Error('يجب إدخال كلمة المرور');
+        }
+
+        // جلب بيانات المسؤول
+        const adminRef = db.collection('admin').doc('credentials');
+        const adminDoc = await adminRef.get();
+        
+        if (!adminDoc.exists) {
+            throw new Error('لم يتم العثور على بيانات المسؤول');
+        }
+        
+        const storedPassword = adminDoc.data().password;
+        
+        // التحقق من كلمة المرور
+        if (password !== storedPassword) {
+            throw new Error('كلمة المرور غير صحيحة');
+        }
+
+        // تسجيل وقت آخر تسجيل دخول
+        await adminRef.update({
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        return true;
+    } catch (error) {
+        console.error('خطأ في تسجيل الدخول:', error);
+        throw error;
+    }
+}
+
 // دالة تحديث كلمة مرور المسؤول
 window.updateAdminPassword = async function(currentPassword, newPassword) {
     try {
@@ -129,7 +164,7 @@ window.updateAdminPassword = async function(currentPassword, newPassword) {
         // تحديث كلمة المرور
         await adminRef.update({
             password: newPassword,
-            lastPasswordUpdate: new Date().toISOString()
+            lastPasswordUpdate: firebase.firestore.FieldValue.serverTimestamp()
         });
         
         console.log('تم تحديث كلمة المرور بنجاح');
