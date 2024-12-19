@@ -19,37 +19,38 @@ const db = firebase.firestore();
 
 // دوال Firebase
 (function() {
-    // تصدير الدوال
-    window.registerCustomer = async function(customerData) {
+    // دالة التحقق من الأذونات
+    async function checkAdminPermissions() {
         try {
-            const docRef = await db.collection('customers').add({
-                ...customerData,
-                registrationDate: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            console.log("تم تسجيل العميل بنجاح، ID:", docRef.id);
-            return docRef.id;
+            const adminRef = db.collection('admin').doc('credentials');
+            const adminDoc = await adminRef.get();
+            
+            if (!adminDoc.exists) {
+                throw new Error('لم يتم العثور على بيانات المسؤول');
+            }
+            
+            const permissions = adminDoc.data().permissions || {};
+            
+            return {
+                canUpdateVersion: permissions.canUpdateVersion || false,
+                canChangePassword: permissions.canChangePassword || false
+            };
         } catch (error) {
-            console.error("خطأ في تسجيل العميل:", error);
+            console.error('خطأ في التحقق من الأذونات:', error);
             throw error;
         }
     }
 
-    window.getCustomers = async function() {
-        try {
-            const snapshot = await db.collection('customers').get();
-            return snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-        } catch (error) {
-            console.error("خطأ في جلب قائمة العملاء:", error);
-            throw error;
-        }
-    }
-
-    // دالة تحديث رقم الإصدار مع معالجة أخطاء محسنة
+    // دالة تحديث رقم الإصدار مع التحقق من الأذونات
     window.updateAppVersion = async function(versionData) {
         try {
+            // التحقق من الأذونات
+            const permissions = await checkAdminPermissions();
+            
+            if (!permissions.canUpdateVersion) {
+                throw new Error('ليس لديك إذن لتحديث رقم الإصدار');
+            }
+
             // التحقق من صحة المدخلات
             if (!versionData.currentVersion || !versionData.newVersion) {
                 throw new Error('يجب إدخال رقم الإصدار الحالي والجديد');
@@ -77,26 +78,50 @@ const db = firebase.firestore();
         }
     }
 
-    // دالة جلب رقم الإصدار الحالي
-    window.getCurrentVersion = async function() {
+    // دالة تحديث كلمة مرور المسؤول مع التحقق من الأذونات
+    window.updateAdminPassword = async function(currentPassword, newPassword) {
         try {
-            const doc = await db.collection('app_settings').doc('version').get();
-            return doc.exists ? doc.data().newVersion : '1.0.0';
-        } catch (error) {
-            console.error("خطأ في جلب رقم الإصدار:", error);
-            return '1.0.0';
-        }
-    }
+            // التحقق من الأذونات
+            const permissions = await checkAdminPermissions();
+            
+            if (!permissions.canChangePassword) {
+                throw new Error('ليس لديك إذن لتغيير كلمة المرور');
+            }
 
-    // دالة تحديث رقم الإصدار في الصفحة الرئيسية
-    window.updateIndexVersion = async function(version) {
-        try {
-            const indexRef = db.collection('app_settings').doc('index');
-            await indexRef.set({ version: version }, { merge: true });
-            console.log("تم تحديث رقم الإصدار في الصفحة الرئيسية");
+            // التحقق من صحة المدخلات
+            if (!currentPassword || !newPassword) {
+                throw new Error('يجب إدخال كلمة المرور الحالية والجديدة');
+            }
+
+            if (newPassword.length < 8) {
+                throw new Error('يجب أن تكون كلمة المرور على الأقل 8 أحرف');
+            }
+
+            // التحقق من كلمة المرور الحالية
+            const adminRef = db.collection('admin').doc('credentials');
+            const adminDoc = await adminRef.get();
+            
+            if (!adminDoc.exists) {
+                throw new Error('لم يتم العثور على بيانات المسؤول');
+            }
+            
+            const storedPassword = adminDoc.data().password;
+            
+            // التحقق من كلمة المرور الحالية
+            if (currentPassword !== storedPassword) {
+                throw new Error('كلمة المرور الحالية غير صحيحة');
+            }
+            
+            // تحديث كلمة المرور
+            await adminRef.update({
+                password: newPassword,
+                lastPasswordUpdate: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            console.log('تم تحديث كلمة المرور بنجاح');
             return true;
         } catch (error) {
-            console.error("خطأ في تحديث رقم الإصدار في الصفحة الرئيسية:", error);
+            console.error('خطأ في تحديث كلمة المرور:', error);
             throw error;
         }
     }
@@ -136,43 +161,55 @@ const db = firebase.firestore();
         }
     }
 
-    // دالة تحديث كلمة مرور المسؤول
-    window.updateAdminPassword = async function(currentPassword, newPassword) {
+    // دالة تسجيل العميل
+    window.registerCustomer = async function(customerData) {
         try {
-            // التحقق من صحة المدخلات
-            if (!currentPassword || !newPassword) {
-                throw new Error('يجب إدخال كلمة المرور الحالية والجديدة');
-            }
-
-            if (newPassword.length < 8) {
-                throw new Error('يجب أن تكون كلمة المرور على الأقل 8 أحرف');
-            }
-
-            // التحقق من كلمة المرور الحالية
-            const adminRef = db.collection('admin').doc('credentials');
-            const adminDoc = await adminRef.get();
-            
-            if (!adminDoc.exists) {
-                throw new Error('لم يتم العثور على بيانات المسؤول');
-            }
-            
-            const storedPassword = adminDoc.data().password;
-            
-            // التحقق من كلمة المرور الحالية
-            if (currentPassword !== storedPassword) {
-                throw new Error('كلمة المرور الحالية غير صحيحة');
-            }
-            
-            // تحديث كلمة المرور
-            await adminRef.update({
-                password: newPassword,
-                lastPasswordUpdate: firebase.firestore.FieldValue.serverTimestamp()
+            const docRef = await db.collection('customers').add({
+                ...customerData,
+                registrationDate: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
-            console.log('تم تحديث كلمة المرور بنجاح');
+            console.log("تم تسجيل العميل بنجاح، ID:", docRef.id);
+            return docRef.id;
+        } catch (error) {
+            console.error("خطأ في تسجيل العميل:", error);
+            throw error;
+        }
+    }
+
+    // دالة جلب قائمة العملاء
+    window.getCustomers = async function() {
+        try {
+            const snapshot = await db.collection('customers').get();
+            return snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        } catch (error) {
+            console.error("خطأ في جلب قائمة العملاء:", error);
+            throw error;
+        }
+    }
+
+    // دالة جلب رقم الإصدار الحالي
+    window.getCurrentVersion = async function() {
+        try {
+            const doc = await db.collection('app_settings').doc('version').get();
+            return doc.exists ? doc.data().newVersion : '1.0.0';
+        } catch (error) {
+            console.error("خطأ في جلب رقم الإصدار:", error);
+            return '1.0.0';
+        }
+    }
+
+    // دالة تحديث رقم الإصدار في الصفحة الرئيسية
+    window.updateIndexVersion = async function(version) {
+        try {
+            const indexRef = db.collection('app_settings').doc('index');
+            await indexRef.set({ version: version }, { merge: true });
+            console.log("تم تحديث رقم الإصدار في الصفحة الرئيسية");
             return true;
         } catch (error) {
-            console.error('خطأ في تحديث كلمة المرور:', error);
+            console.error("خطأ في تحديث رقم الإصدار في الصفحة الرئيسية:", error);
             throw error;
         }
     }
