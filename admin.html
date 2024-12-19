@@ -34,6 +34,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#messages">الرسائل</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#version">تحديث رقم الإصدار</a>
+                    </li>
                 </ul>
                 <button onclick="logout()" class="btn btn-outline-light">
                     <i class="fas fa-sign-out-alt me-2"></i>
@@ -139,6 +142,41 @@
                         </div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane me-2"></i>إرسال
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- تحديث رقم الإصدار -->
+    <section id="version" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="mb-4">تحديث رقم الإصدار</h2>
+            <div class="card">
+                <div class="card-body">
+                    <form id="versionForm">
+                        <div class="mb-3">
+                            <label class="form-label">رقم الإصدار الحالي</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="currentVersion" readonly>
+                                <button class="btn btn-secondary" type="button" onclick="copyVersion()">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">رقم الإصدار الجديد</label>
+                            <input type="text" class="form-control" id="newVersion" required 
+                                   pattern="^\d+\.\d+\.\d+$" 
+                                   placeholder="مثال: 1.2.3">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">وصف التحديث</label>
+                            <textarea class="form-control" id="versionDescription" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>تحديث رقم الإصدار
                         </button>
                     </form>
                 </div>
@@ -309,6 +347,56 @@
                 alert('حدث خطأ أثناء تصدير البيانات');
             }
         }
+
+        // نسخ رقم الإصدار
+        function copyVersion() {
+            const currentVersionInput = document.getElementById('currentVersion');
+            currentVersionInput.select();
+            document.execCommand('copy');
+            alert('تم نسخ رقم الإصدار');
+        }
+
+        // تحديث رقم الإصدار
+        document.getElementById('versionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentVersion = document.getElementById('currentVersion').value;
+            const newVersion = document.getElementById('newVersion').value;
+            const description = document.getElementById('versionDescription').value;
+            
+            try {
+                // تحديث رقم الإصدار في Firebase
+                await window.updateAppVersion({
+                    currentVersion: currentVersion,
+                    newVersion: newVersion,
+                    description: description,
+                    updateDate: new Date().toISOString()
+                });
+                
+                // تحديث الصفحة الرئيسية
+                await window.updateIndexVersion(newVersion);
+                
+                alert('تم تحديث رقم الإصدار بنجاح');
+                document.getElementById('currentVersion').value = newVersion;
+                this.reset();
+            } catch (error) {
+                console.error('خطأ في تحديث رقم الإصدار:', error);
+                alert('حدث خطأ أثناء تحديث رقم الإصدار');
+            }
+        });
+
+        // تحميل رقم الإصدار الحالي
+        async function loadCurrentVersion() {
+            try {
+                const version = await window.getCurrentVersion();
+                document.getElementById('currentVersion').value = version;
+            } catch (error) {
+                console.error('خطأ في تحميل رقم الإصدار:', error);
+            }
+        }
+
+        // تحميل رقم الإصدار عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', loadCurrentVersion);
 
         // تحديث البيانات عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {

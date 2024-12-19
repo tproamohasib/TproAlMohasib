@@ -44,3 +44,39 @@ window.getCustomers = async function() {
         throw error;
     }
 }
+
+// دالة تحديث رقم الإصدار
+window.updateAppVersion = async function(versionData) {
+    try {
+        await db.collection('app_settings').doc('version').set(versionData, { merge: true });
+        console.log("تم تحديث رقم الإصدار بنجاح");
+        return true;
+    } catch (error) {
+        console.error("خطأ في تحديث رقم الإصدار:", error);
+        throw error;
+    }
+}
+
+// دالة جلب رقم الإصدار الحالي
+window.getCurrentVersion = async function() {
+    try {
+        const doc = await db.collection('app_settings').doc('version').get();
+        return doc.exists ? doc.data().newVersion : '1.0.0';
+    } catch (error) {
+        console.error("خطأ في جلب رقم الإصدار:", error);
+        return '1.0.0';
+    }
+}
+
+// دالة تحديث رقم الإصدار في الصفحة الرئيسية
+window.updateIndexVersion = async function(version) {
+    try {
+        const indexRef = db.collection('app_settings').doc('index');
+        await indexRef.set({ version: version }, { merge: true });
+        console.log("تم تحديث رقم الإصدار في الصفحة الرئيسية");
+        return true;
+    } catch (error) {
+        console.error("خطأ في تحديث رقم الإصدار في الصفحة الرئيسية:", error);
+        throw error;
+    }
+}
