@@ -19,75 +19,9 @@ const db = firebase.firestore();
 
 // دوال Firebase
 (function() {
-    // دالة التحقق من الأذونات
-    async function checkAdminPermissions() {
-        try {
-            const adminRef = db.collection('admin').doc('credentials');
-            const adminDoc = await adminRef.get();
-            
-            if (!adminDoc.exists) {
-                throw new Error('لم يتم العثور على بيانات المسؤول');
-            }
-            
-            const permissions = adminDoc.data().permissions || {};
-            
-            return {
-                canUpdateVersion: permissions.canUpdateVersion || false,
-                canChangePassword: permissions.canChangePassword || false
-            };
-        } catch (error) {
-            console.error('خطأ في التحقق من الأذونات:', error);
-            throw error;
-        }
-    }
-
-    // دالة تحديث رقم الإصدار مع التحقق من الأذونات
-    window.updateAppVersion = async function(versionData) {
-        try {
-            // التحقق من الأذونات
-            const permissions = await checkAdminPermissions();
-            
-            if (!permissions.canUpdateVersion) {
-                throw new Error('ليس لديك إذن لتحديث رقم الإصدار');
-            }
-
-            // التحقق من صحة المدخلات
-            if (!versionData.currentVersion || !versionData.newVersion) {
-                throw new Error('يجب إدخال رقم الإصدار الحالي والجديد');
-            }
-
-            // التحقق من صحة تنسيق رقم الإصدار
-            const versionRegex = /^\d+\.\d+\.\d+$/;
-            if (!versionRegex.test(versionData.newVersion)) {
-                throw new Error('تنسيق رقم الإصدار غير صحيح. يجب أن يكون بالشكل X.Y.Z');
-            }
-
-            // تحديث رقم الإصدار في Firebase
-            await db.collection('app_settings').doc('version').set(versionData, { merge: true });
-            
-            // تحديث رقم الإصدار في الصفحة الرئيسية
-            await db.collection('app_settings').doc('index').set({ 
-                version: versionData.newVersion 
-            }, { merge: true });
-
-            console.log("تم تحديث رقم الإصدار بنجاح");
-            return true;
-        } catch (error) {
-            console.error("خطأ في تحديث رقم الإصدار:", error);
-            throw error;
-        }
-    }
-
-    // دالة تحديث كلمة مرور المسؤول مع التحقق من الأذونات
+    // دالة تحديث كلمة مرور المسؤول
     window.updateAdminPassword = async function(currentPassword, newPassword) {
         try {
-            // التحقق من الأذونات
-            const permissions = await checkAdminPermissions();
-            
-            if (!permissions.canChangePassword) {
-                throw new Error('ليس لديك إذن لتغيير كلمة المرور');
-            }
-
             // التحقق من صحة المدخلات
             if (!currentPassword || !newPassword) {
                 throw new Error('يجب إدخال كلمة المرور الحالية والجديدة');
@@ -161,31 +95,32 @@ const db = firebase.firestore();
         }
     }
 
-    // دالة تسجيل العميل
-    window.registerCustomer = async function(customerData) {
+    // دالة تحديث رقم الإصدار
+    window.updateAppVersion = async function(versionData) {
         try {
-            const docRef = await db.collection('customers').add({
-                ...customerData,
-                registrationDate: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            console.log("تم تسجيل العميل بنجاح، ID:", docRef.id);
-            return docRef.id;
-        } catch (error) {
-            console.error("خطأ في تسجيل العميل:", error);
-            throw error;
-        }
-    }
+            // التحقق من صحة المدخلات
+            if (!versionData.currentVersion || !versionData.newVersion) {
+                throw new Error('يجب إدخال رقم الإصدار الحالي والجديد');
+            }
 
-    // دالة جلب قائمة العملاء
-    window.getCustomers = async function() {
-        try {
-            const snapshot = await db.collection('customers').get();
-            return snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            // التحقق من صحة تنسيق رقم الإصدار
+            const versionRegex = /^\d+\.\d+\.\d+$/;
+            if (!versionRegex.test(versionData.newVersion)) {
+                throw new Error('تنسيق رقم الإصدار غير صحيح. يجب أن يكون بالشكل X.Y.Z');
+            }
+
+            // تحديث رقم الإصدار في Firebase
+            await db.collection('app_settings').doc('version').set(versionData, { merge: true });
+            
+            // تحديث رقم الإصدار في الصفحة الرئيسية
+            await db.collection('app_settings').doc('index').set({ 
+                version: versionData.newVersion 
+            }, { merge: true });
+
+            console.log("تم تحديث رقم الإصدار بنجاح");
+            return true;
         } catch (error) {
-            console.error("خطأ في جلب قائمة العملاء:", error);
+            console.error("خطأ في تحديث رقم الإصدار:", error);
             throw error;
         }
     }
@@ -198,19 +133,6 @@ const db = firebase.firestore();
         } catch (error) {
             console.error("خطأ في جلب رقم الإصدار:", error);
             return '1.0.0';
-        }
-    }
-
-    // دالة تحديث رقم الإصدار في الصفحة الرئيسية
-    window.updateIndexVersion = async function(version) {
-        try {
-            const indexRef = db.collection('app_settings').doc('index');
-            await indexRef.set({ version: version }, { merge: true });
-            console.log("تم تحديث رقم الإصدار في الصفحة الرئيسية");
-            return true;
-        } catch (error) {
-            console.error("خطأ في تحديث رقم الإصدار في الصفحة الرئيسية:", error);
-            throw error;
         }
     }
 })();
