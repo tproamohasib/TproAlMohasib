@@ -3,7 +3,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyAAFS7-4b4jow4IRyVRzpIiSJf4SexGwvs",
     authDomain: "tpro-almohasib.firebaseapp.com",
     projectId: "tpro-almohasib",
-    storageBucket: "tpro-almohasib.firebasestorage.app",
+    storageBucket: "tpro-almohasib.appspot.com",
     messagingSenderId: "983397471575",
     appId: "1:983397471575:web:340adfeb88bff0c1dcda12",
     measurementId: "G-P7PM4E05H1"
@@ -18,17 +18,57 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 // دوال Firebase
-(function() {
-    // دالة تحديث كلمة مرور المسؤول
-    window.updateAdminPassword = async function(currentPassword, newPassword) {
+function adminLogin(password) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // التحقق من صحة المدخلات
+            if (!password) {
+                reject(new Error('يجب إدخال كلمة المرور'));
+                return;
+            }
+
+            // جلب بيانات المسؤول
+            const adminRef = db.collection('admin').doc('credentials');
+            const adminDoc = await adminRef.get();
+            
+            if (!adminDoc.exists) {
+                reject(new Error('لم يتم العثور على بيانات المسؤول'));
+                return;
+            }
+            
+            const storedPassword = adminDoc.data().password;
+            
+            // التحقق من كلمة المرور
+            if (password !== storedPassword) {
+                reject(new Error('كلمة المرور غير صحيحة'));
+                return;
+            }
+
+            // تسجيل وقت آخر تسجيل دخول
+            await adminRef.update({
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            resolve(true);
+        } catch (error) {
+            console.error('خطأ في تسجيل الدخول:', error);
+            reject(error);
+        }
+    });
+}
+
+function updateAdminPassword(currentPassword, newPassword) {
+    return new Promise(async (resolve, reject) => {
         try {
             // التحقق من صحة المدخلات
             if (!currentPassword || !newPassword) {
-                throw new Error('يجب إدخال كلمة المرور الحالية والجديدة');
+                reject(new Error('يجب إدخال كلمة المرور الحالية والجديدة'));
+                return;
             }
 
             if (newPassword.length < 8) {
-                throw new Error('يجب أن تكون كلمة المرور على الأقل 8 أحرف');
+                reject(new Error('يجب أن تكون كلمة المرور على الأقل 8 أحرف'));
+                return;
             }
 
             // التحقق من كلمة المرور الحالية
@@ -36,14 +76,16 @@ const db = firebase.firestore();
             const adminDoc = await adminRef.get();
             
             if (!adminDoc.exists) {
-                throw new Error('لم يتم العثور على بيانات المسؤول');
+                reject(new Error('لم يتم العثور على بيانات المسؤول'));
+                return;
             }
             
             const storedPassword = adminDoc.data().password;
             
             // التحقق من كلمة المرور الحالية
             if (currentPassword !== storedPassword) {
-                throw new Error('كلمة المرور الحالية غير صحيحة');
+                reject(new Error('كلمة المرور الحالية غير صحيحة'));
+                return;
             }
             
             // تحديث كلمة المرور
@@ -52,61 +94,28 @@ const db = firebase.firestore();
                 lastPasswordUpdate: firebase.firestore.FieldValue.serverTimestamp()
             });
             
-            console.log('تم تحديث كلمة المرور بنجاح');
-            return true;
+            resolve(true);
         } catch (error) {
             console.error('خطأ في تحديث كلمة المرور:', error);
-            throw error;
+            reject(error);
         }
-    }
+    });
+}
 
-    // دالة تسجيل دخول المسؤول
-    window.adminLogin = async function(password) {
-        try {
-            // التحقق من صحة المدخلات
-            if (!password) {
-                throw new Error('يجب إدخال كلمة المرور');
-            }
-
-            // جلب بيانات المسؤول
-            const adminRef = db.collection('admin').doc('credentials');
-            const adminDoc = await adminRef.get();
-            
-            if (!adminDoc.exists) {
-                throw new Error('لم يتم العثور على بيانات المسؤول');
-            }
-            
-            const storedPassword = adminDoc.data().password;
-            
-            // التحقق من كلمة المرور
-            if (password !== storedPassword) {
-                throw new Error('كلمة المرور غير صحيحة');
-            }
-
-            // تسجيل وقت آخر تسجيل دخول
-            await adminRef.update({
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
-            return true;
-        } catch (error) {
-            console.error('خطأ في تسجيل الدخول:', error);
-            throw error;
-        }
-    }
-
-    // دالة تحديث رقم الإصدار
-    window.updateAppVersion = async function(versionData) {
+function updateAppVersion(versionData) {
+    return new Promise(async (resolve, reject) => {
         try {
             // التحقق من صحة المدخلات
             if (!versionData.currentVersion || !versionData.newVersion) {
-                throw new Error('يجب إدخال رقم الإصدار الحالي والجديد');
+                reject(new Error('يجب إدخال رقم الإصدار الحالي والجديد'));
+                return;
             }
 
             // التحقق من صحة تنسيق رقم الإصدار
             const versionRegex = /^\d+\.\d+\.\d+$/;
             if (!versionRegex.test(versionData.newVersion)) {
-                throw new Error('تنسيق رقم الإصدار غير صحيح. يجب أن يكون بالشكل X.Y.Z');
+                reject(new Error('تنسيق رقم الإصدار غير صحيح. يجب أن يكون بالشكل X.Y.Z'));
+                return;
             }
 
             // تحديث رقم الإصدار في Firebase
@@ -117,22 +126,28 @@ const db = firebase.firestore();
                 version: versionData.newVersion 
             }, { merge: true });
 
-            console.log("تم تحديث رقم الإصدار بنجاح");
-            return true;
+            resolve(true);
         } catch (error) {
             console.error("خطأ في تحديث رقم الإصدار:", error);
-            throw error;
+            reject(error);
         }
-    }
+    });
+}
 
-    // دالة جلب رقم الإصدار الحالي
-    window.getCurrentVersion = async function() {
+function getCurrentVersion() {
+    return new Promise(async (resolve, reject) => {
         try {
             const doc = await db.collection('app_settings').doc('version').get();
-            return doc.exists ? doc.data().newVersion : '1.0.0';
+            resolve(doc.exists ? doc.data().newVersion : '1.0.0');
         } catch (error) {
             console.error("خطأ في جلب رقم الإصدار:", error);
-            return '1.0.0';
+            resolve('1.0.0');
         }
-    }
-})();
+    });
+}
+
+// تعريف الدوال في النافذة
+window.adminLogin = adminLogin;
+window.updateAdminPassword = updateAdminPassword;
+window.updateAppVersion = updateAppVersion;
+window.getCurrentVersion = getCurrentVersion;
