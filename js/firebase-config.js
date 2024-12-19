@@ -80,3 +80,35 @@ window.updateIndexVersion = async function(version) {
         throw error;
     }
 }
+
+// دالة تحديث كلمة مرور المسؤول
+window.updateAdminPassword = async function(currentPassword, newPassword) {
+    try {
+        // التحقق من كلمة المرور الحالية
+        const adminRef = db.collection('admin').doc('credentials');
+        const adminDoc = await adminRef.get();
+        
+        if (!adminDoc.exists) {
+            throw new Error('لم يتم العثور على بيانات المسؤول');
+        }
+        
+        const storedPassword = adminDoc.data().password;
+        
+        // التحقق من كلمة المرور الحالية
+        if (currentPassword !== storedPassword) {
+            throw new Error('كلمة المرور الحالية غير صحيحة');
+        }
+        
+        // تحديث كلمة المرور
+        await adminRef.update({
+            password: newPassword,
+            lastPasswordUpdate: new Date().toISOString()
+        });
+        
+        console.log('تم تحديث كلمة المرور بنجاح');
+        return true;
+    } catch (error) {
+        console.error('خطأ في تحديث كلمة المرور:', error);
+        throw error;
+    }
+}

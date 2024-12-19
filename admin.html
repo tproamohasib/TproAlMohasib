@@ -37,6 +37,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#version">تحديث رقم الإصدار</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#changePassword">تغيير كلمة المرور</a>
+                    </li>
                 </ul>
                 <button onclick="logout()" class="btn btn-outline-light">
                     <i class="fas fa-sign-out-alt me-2"></i>
@@ -179,6 +182,39 @@
                             <i class="fas fa-upload me-2"></i>تحديث رقم الإصدار
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم تغيير كلمة المرور -->
+    <section id="changePassword" class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h3>تغيير كلمة المرور</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="changePasswordForm">
+                                <div class="mb-3">
+                                    <label for="currentPassword" class="form-label">كلمة المرور الحالية</label>
+                                    <input type="password" class="form-control" id="currentPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newPassword" class="form-label">كلمة المرور الجديدة</label>
+                                    <input type="password" class="form-control" id="newPassword" required minlength="8">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">تأكيد كلمة المرور الجديدة</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required minlength="8">
+                                </div>
+                                <div id="passwordError" class="text-danger mb-3" style="display:none;"></div>
+                                <button type="submit" class="btn btn-primary w-100">تغيير كلمة المرور</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -382,6 +418,32 @@
             } catch (error) {
                 console.error('خطأ في تحديث رقم الإصدار:', error);
                 alert('حدث خطأ أثناء تحديث رقم الإصدار');
+            }
+        });
+
+        // تغيير كلمة المرور
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                document.getElementById('passwordError').textContent = 'كلمة المرور الجديدة وتأكيد كلمة المرور الجديدة لا يتطابقان';
+                document.getElementById('passwordError').style.display = 'block';
+                return;
+            }
+            
+            try {
+                // تحديث كلمة المرور في Firebase
+                await window.updateAdminPassword(currentPassword, newPassword);
+                
+                alert('تم تغيير كلمة المرور بنجاح');
+                this.reset();
+            } catch (error) {
+                console.error('خطأ في تغيير كلمة المرور:', error);
+                alert('حدث خطأ أثناء تغيير كلمة المرور');
             }
         });
 
