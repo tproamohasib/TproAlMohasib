@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tproamohasib.github.io/TproAlMohasib/sitemap.xml
+
+# Directories to exclude
+Disallow: /admin.html
+Disallow: /login.html
