@@ -45,10 +45,28 @@ window.getCustomers = async function() {
     }
 }
 
-// دالة تحديث رقم الإصدار
+// دالة تحديث رقم الإصدار مع معالجة أخطاء محسنة
 window.updateAppVersion = async function(versionData) {
     try {
+        // التحقق من صحة المدخلات
+        if (!versionData.currentVersion || !versionData.newVersion) {
+            throw new Error('يجب إدخال رقم الإصدار الحالي والجديد');
+        }
+
+        // التحقق من صحة تنسيق رقم الإصدار
+        const versionRegex = /^\d+\.\d+\.\d+$/;
+        if (!versionRegex.test(versionData.newVersion)) {
+            throw new Error('تنسيق رقم الإصدار غير صحيح. يجب أن يكون بالشكل X.Y.Z');
+        }
+
+        // تحديث رقم الإصدار في Firebase
         await db.collection('app_settings').doc('version').set(versionData, { merge: true });
+        
+        // تحديث رقم الإصدار في الصفحة الرئيسية
+        await db.collection('app_settings').doc('index').set({ 
+            version: versionData.newVersion 
+        }, { merge: true });
+
         console.log("تم تحديث رقم الإصدار بنجاح");
         return true;
     } catch (error) {
@@ -84,6 +102,15 @@ window.updateIndexVersion = async function(version) {
 // دالة تحديث كلمة مرور المسؤول
 window.updateAdminPassword = async function(currentPassword, newPassword) {
     try {
+        // التحقق من صحة المدخلات
+        if (!currentPassword || !newPassword) {
+            throw new Error('يجب إدخال كلمة المرور الحالية والجديدة');
+        }
+
+        if (newPassword.length < 8) {
+            throw new Error('يجب أن تكون كلمة المرور على الأقل 8 أحرف');
+        }
+
         // التحقق من كلمة المرور الحالية
         const adminRef = db.collection('admin').doc('credentials');
         const adminDoc = await adminRef.get();

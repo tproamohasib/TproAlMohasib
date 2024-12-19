@@ -178,6 +178,7 @@
                             <label class="form-label">وصف التحديث</label>
                             <textarea class="form-control" id="versionDescription" rows="3" required></textarea>
                         </div>
+                        <div id="versionError" class="text-danger mb-3" style="display:none;"></div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-upload me-2"></i>تحديث رقم الإصدار
                         </button>
@@ -392,35 +393,6 @@
             alert('تم نسخ رقم الإصدار');
         }
 
-        // تحديث رقم الإصدار
-        document.getElementById('versionForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const currentVersion = document.getElementById('currentVersion').value;
-            const newVersion = document.getElementById('newVersion').value;
-            const description = document.getElementById('versionDescription').value;
-            
-            try {
-                // تحديث رقم الإصدار في Firebase
-                await window.updateAppVersion({
-                    currentVersion: currentVersion,
-                    newVersion: newVersion,
-                    description: description,
-                    updateDate: new Date().toISOString()
-                });
-                
-                // تحديث الصفحة الرئيسية
-                await window.updateIndexVersion(newVersion);
-                
-                alert('تم تحديث رقم الإصدار بنجاح');
-                document.getElementById('currentVersion').value = newVersion;
-                this.reset();
-            } catch (error) {
-                console.error('خطأ في تحديث رقم الإصدار:', error);
-                alert('حدث خطأ أثناء تحديث رقم الإصدار');
-            }
-        });
-
         // تغيير كلمة المرور
         document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -428,10 +400,15 @@
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('passwordError');
+            
+            // إعادة تعيين رسائل الخطأ
+            errorDiv.textContent = '';
+            errorDiv.style.display = 'none';
             
             if (newPassword !== confirmPassword) {
-                document.getElementById('passwordError').textContent = 'كلمة المرور الجديدة وتأكيد كلمة المرور الجديدة لا يتطابقان';
-                document.getElementById('passwordError').style.display = 'block';
+                errorDiv.textContent = 'كلمة المرور الجديدة وتأكيد كلمة المرور الجديدة لا يتطابقان';
+                errorDiv.style.display = 'block';
                 return;
             }
             
@@ -443,7 +420,40 @@
                 this.reset();
             } catch (error) {
                 console.error('خطأ في تغيير كلمة المرور:', error);
-                alert('حدث خطأ أثناء تغيير كلمة المرور');
+                errorDiv.textContent = error.message || 'حدث خطأ أثناء تغيير كلمة المرور';
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // تحديث رقم الإصدار
+        document.getElementById('versionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentVersion = document.getElementById('currentVersion').value;
+            const newVersion = document.getElementById('newVersion').value;
+            const description = document.getElementById('versionDescription').value;
+            const errorDiv = document.getElementById('versionError');
+            
+            // إعادة تعيين رسائل الخطأ
+            errorDiv.textContent = '';
+            errorDiv.style.display = 'none';
+            
+            try {
+                // تحديث رقم الإصدار في Firebase
+                await window.updateAppVersion({
+                    currentVersion: currentVersion,
+                    newVersion: newVersion,
+                    description: description,
+                    updateDate: new Date().toISOString()
+                });
+                
+                alert('تم تحديث رقم الإصدار بنجاح');
+                document.getElementById('currentVersion').value = newVersion;
+                this.reset();
+            } catch (error) {
+                console.error('خطأ في تحديث رقم الإصدار:', error);
+                errorDiv.textContent = error.message || 'حدث خطأ أثناء تحديث رقم الإصدار';
+                errorDiv.style.display = 'block';
             }
         });
 
