@@ -172,14 +172,10 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
-    <!-- Firebase Configuration -->
-    <script src="js/firebase-config.js"></script>
-
     <script>
+        // نظام تسجيل دخول بسيط للنسخة التجريبية
+        const ADMIN_PASSWORD = "admin123"; // كلمة المرور الافتراضية للنسخة التجريبية
+
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -198,31 +194,33 @@
             
             try {
                 console.log("محاولة تسجيل الدخول...");
-                // محاولة تسجيل الدخول
-                const loginResult = await window.adminLogin(password);
                 
-                if (loginResult) {
+                // تأخير بسيط لمحاكاة عملية التحقق
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // التحقق من كلمة المرور
+                if (password === ADMIN_PASSWORD) {
                     // إظهار رسالة نجاح
                     errorDiv.textContent = 'تم تسجيل الدخول بنجاح! جاري التوجيه...';
                     errorDiv.style.display = 'block';
                     errorDiv.className = 'alert alert-success';
                     
+                    // حفظ حالة تسجيل الدخول في التخزين المحلي
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('loginTime', new Date().toISOString());
+                    
                     // التوجيه إلى صفحة الإدارة بعد تأخير قصير
                     setTimeout(() => {
                         window.location.href = 'admin.html';
                     }, 1500);
+                } else {
+                    throw new Error('كلمة المرور غير صحيحة');
                 }
             } catch (error) {
                 console.error("خطأ في تسجيل الدخول:", error);
                 
                 // عرض رسالة الخطأ
                 errorDiv.textContent = error.message || 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.';
-                
-                // إذا كان الخطأ متعلق بالأذونات، أضف تفاصيل إضافية
-                if (error.message && error.message.includes('permission')) {
-                    errorDiv.textContent += ' (خطأ في الأذونات: تأكد من إعدادات قواعد الأمان في Firebase)';
-                }
-                
                 errorDiv.style.display = 'block';
                 errorDiv.className = 'alert alert-danger';
                 
