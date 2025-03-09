@@ -8,9 +8,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
+    
+    <!-- مكتبات إضافية -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         .stats-card {
@@ -19,15 +24,423 @@
         .stats-card:hover {
             transform: translateY(-5px);
         }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
     </style>
     <script>
-        // التحقق من تسجيل الدخول فورًا عند تحميل الصفحة
-        (function() {
+        // التحقق من حالة تسجيل الدخول
+        function checkLoginStatus() {
             const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const loginTime = localStorage.getItem('loginTime');
+            
+            // إذا لم يكن المستخدم مسجل الدخول، توجيهه إلى صفحة تسجيل الدخول
             if (!isLoggedIn) {
                 window.location.href = 'login.html';
+                return;
             }
-        })();
+            
+            // التحقق من صلاحية الجلسة (24 ساعة)
+            if (loginTime) {
+                const loginDate = new Date(loginTime);
+                const currentDate = new Date();
+                const hoursDiff = (currentDate - loginDate) / (1000 * 60 * 60);
+                
+                if (hoursDiff > 24) {
+                    // انتهت صلاحية الجلسة
+                    logout();
+                    return;
+                }
+            }
+        }
+
+        // تنفيذ التحقق من تسجيل الدخول عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            
+            // تهيئة البيانات التجريبية
+            initDemoData();
+        });
+        
+        // تسجيل الخروج
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('loginTime');
+            window.location.href = 'login.html';
+        }
+        
+        // تهيئة البيانات التجريبية
+        function initDemoData() {
+            // بيانات تجريبية للإصدار
+            document.getElementById('currentVersion').value = "2.1.0";
+            
+            // بيانات تجريبية للعملاء
+            displayCustomers();
+            
+            // تحديث الإحصائيات
+            updateStats();
+        }
+        
+        // عرض قائمة العملاء
+        async function displayCustomers() {
+            try {
+                const customersRef = firebase.firestore().collection('customers');
+                const snapshot = await customersRef.get();
+                const tbody = document.getElementById('customersList');
+                tbody.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    console.log("لا يوجد عملاء");
+                    // إضافة بيانات تجريبية إذا لم يكن هناك عملاء
+                    addDemoCustomers();
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const customer = doc.data();
+                    customer.id = doc.id;
+                    
+                    const row = document.createElement('tr');
+                    row.dataset.customerId = customer.id;
+                    
+                    // تحديد لون الصف بناءً على حالة العميل
+                    if (customer.status === 'غير نشط') {
+                        row.classList.add('table-secondary');
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${customer.name}</td>
+                        <td>${customer.companyName || '-'}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone}</td>
+                        <td>${getVersionName(customer.version) || '-'}</td>
+                        <td><span class="badge ${customer.status === 'نشط' ? 'bg-success' : 'bg-secondary'}">${customer.status || 'غير نشط'}</span></td>
+                        <td>${customer.registrationDate ? (customer.registrationDate.toDate ? customer.registrationDate.toDate().toLocaleDateString() : new Date(customer.registrationDate).toLocaleDateString()) : 'غير محدد'}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-primary edit-customer" title="تعديل">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-customer" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn btn-sm ${customer.status === 'نشط' ? 'btn-warning' : 'btn-success'} toggle-status" title="${customer.status === 'نشط' ? 'تعطيل' : 'تفعيل'}">
+                                    <i class="fas ${customer.status === 'نشط' ? 'fa-ban' : 'fa-check'}"></i>
+                                </button>
+                                <button class="btn btn-sm btn-info send-email" title="إرسال بريد إلكتروني">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                    
+                    // إضافة مستمعي الأحداث للأزرار
+                    const editBtn = row.querySelector('.edit-customer');
+                    const deleteBtn = row.querySelector('.delete-customer');
+                    const toggleStatusBtn = row.querySelector('.toggle-status');
+                    const sendEmailBtn = row.querySelector('.send-email');
+                    
+                    editBtn.addEventListener('click', () => editCustomer(customer.id));
+                    deleteBtn.addEventListener('click', () => confirmDeleteCustomer(customer.id, customer.name));
+                    toggleStatusBtn.addEventListener('click', () => toggleCustomerStatus(customer.id, customer.status));
+                    sendEmailBtn.addEventListener('click', () => sendEmail(customer.email, customer.name));
+                });
+                
+                // تحديث عدد العملاء في الإحصائيات
+                document.getElementById('totalCustomers').textContent = snapshot.size;
+                
+                // تحديث الإحصائيات الأخرى
+                updateStats(snapshot);
+                
+            } catch (error) {
+                console.error("خطأ في جلب بيانات العملاء:", error);
+                showAlert("خطأ في جلب بيانات العملاء", "danger");
+                // إضافة بيانات تجريبية في حالة وجود خطأ
+                addDemoCustomers();
+            }
+        }
+        
+        // تحرير بيانات العميل
+        async function editCustomer(customerId) {
+            try {
+                showLoading(true);
+                const customer = await getCustomerById(customerId);
+                if (!customer) {
+                    showAlert('لم يتم العثور على العميل', 'warning');
+                    return;
+                }
+                
+                // إنشاء نموذج التعديل
+                const modal = document.createElement('div');
+                modal.className = 'modal fade';
+                modal.id = 'editCustomerModal';
+                modal.innerHTML = `
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">تعديل بيانات العميل</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editCustomerForm">
+                                    <div class="mb-3">
+                                        <label for="editName" class="form-label">اسم العميل</label>
+                                        <input type="text" class="form-control" id="editName" value="${customer.name}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editCompanyName" class="form-label">اسم الشركة</label>
+                                        <input type="text" class="form-control" id="editCompanyName" value="${customer.companyName || ''}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editEmail" class="form-label">البريد الإلكتروني</label>
+                                        <input type="email" class="form-control" id="editEmail" value="${customer.email}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editPhone" class="form-label">رقم الهاتف</label>
+                                        <input type="tel" class="form-control" id="editPhone" value="${customer.phone}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editAddress" class="form-label">العنوان</label>
+                                        <textarea class="form-control" id="editAddress" rows="2">${customer.address || ''}</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editVersion" class="form-label">نوع النسخة</label>
+                                        <select class="form-select" id="editVersion" required>
+                                            <option value="trial" ${customer.version === 'trial' ? 'selected' : ''}>نسخة تجريبية</option>
+                                            <option value="basic" ${customer.version === 'basic' ? 'selected' : ''}>النسخة الأساسية</option>
+                                            <option value="pro" ${customer.version === 'pro' ? 'selected' : ''}>النسخة الاحترافية</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editStatus" class="form-label">الحالة</label>
+                                        <select class="form-select" id="editStatus" required>
+                                            <option value="نشط" ${customer.status === 'نشط' ? 'selected' : ''}>نشط</option>
+                                            <option value="غير نشط" ${customer.status === 'غير نشط' ? 'selected' : ''}>غير نشط</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editNotes" class="form-label">ملاحظات</label>
+                                        <textarea class="form-control" id="editNotes" rows="3">${customer.notes || ''}</textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                <button type="button" class="btn btn-primary" id="saveCustomerChanges">حفظ التغييرات</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // إنشاء كائن Modal وعرضه
+                const modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+                
+                // معالجة حدث حفظ التغييرات
+                document.getElementById('saveCustomerChanges').addEventListener('click', async () => {
+                    try {
+                        showLoading(true);
+                        
+                        const updatedData = {
+                            name: document.getElementById('editName').value,
+                            companyName: document.getElementById('editCompanyName').value,
+                            email: document.getElementById('editEmail').value,
+                            phone: document.getElementById('editPhone').value,
+                            address: document.getElementById('editAddress').value,
+                            version: document.getElementById('editVersion').value,
+                            status: document.getElementById('editStatus').value,
+                            notes: document.getElementById('editNotes').value
+                        };
+                        
+                        await updateCustomer(customerId, updatedData);
+                        modalInstance.hide();
+                        
+                        // تحديث قائمة العملاء
+                        await displayCustomers();
+                        
+                        showAlert('تم تحديث بيانات العميل بنجاح', 'success');
+                    } catch (error) {
+                        showAlert('حدث خطأ أثناء تحديث بيانات العميل: ' + error.message, 'danger');
+                        console.error(error);
+                    } finally {
+                        showLoading(false);
+                    }
+                });
+                
+                // إزالة النموذج من DOM عند إغلاقه
+                modal.addEventListener('hidden.bs.modal', () => {
+                    document.body.removeChild(modal);
+                });
+            } catch (error) {
+                showAlert('حدث خطأ أثناء تحميل بيانات العميل', 'danger');
+                console.error(error);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // تأكيد حذف العميل
+        function confirmDeleteCustomer(customerId, customerName) {
+            if (confirm(`هل أنت متأكد من حذف العميل "${customerName}"؟`)) {
+                deleteCustomerRecord(customerId);
+            }
+        }
+        
+        // حذف العميل
+        async function deleteCustomerRecord(customerId) {
+            try {
+                showLoading(true);
+                await deleteCustomer(customerId);
+                
+                // تحديث قائمة العملاء
+                await displayCustomers();
+                
+                showAlert('تم حذف العميل بنجاح', 'success');
+            } catch (error) {
+                showAlert('حدث خطأ أثناء حذف العميل', 'danger');
+                console.error(error);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // تغيير حالة العميل
+        async function toggleCustomerStatus(customerId, currentStatus) {
+            try {
+                showLoading(true);
+                const newStatus = currentStatus === 'نشط' ? 'غير نشط' : 'نشط';
+                await changeCustomerStatus(customerId, newStatus);
+                
+                // تحديث قائمة العملاء
+                await displayCustomers();
+                
+                showAlert(`تم تغيير حالة العميل إلى "${newStatus}"`, 'success');
+            } catch (error) {
+                showAlert('حدث خطأ أثناء تغيير حالة العميل', 'danger');
+                console.error(error);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // إرسال بريد إلكتروني للعميل
+        function sendEmail(email, name) {
+            const subject = encodeURIComponent('رسالة من نظام المبرور المحاسبي');
+            const body = encodeURIComponent(`مرحباً ${name || 'عزيزي العميل'}،\n\nنشكرك على استخدام نظام المبرور المحاسبي TPRO.\n\nمع تحيات فريق الدعم الفني`);
+            window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+        }
+        
+        // الحصول على اسم النسخة بالعربية
+        function getVersionName(versionCode) {
+            const versions = {
+                'trial': 'نسخة تجريبية',
+                'basic': 'النسخة الأساسية',
+                'pro': 'النسخة الاحترافية'
+            };
+            return versions[versionCode] || versionCode;
+        }
+        
+        // تحديث الإحصائيات
+        function updateStats(snapshot) {
+            // إحصائيات النسخ
+            let trialCount = 0;
+            let basicCount = 0;
+            let proCount = 0;
+            
+            // إحصائيات الحالة
+            let activeCount = 0;
+            let inactiveCount = 0;
+            
+            // حساب الإحصائيات
+            snapshot.forEach(doc => {
+                const customer = doc.data();
+                
+                // حساب النسخ
+                if (customer.version === 'trial') {
+                    trialCount++;
+                } else if (customer.version === 'basic') {
+                    basicCount++;
+                } else if (customer.version === 'pro') {
+                    proCount++;
+                }
+                
+                // حساب الحالة
+                if (customer.status === 'نشط') {
+                    activeCount++;
+                } else {
+                    inactiveCount++;
+                }
+            });
+            
+            // تحديث إحصائيات النسخ
+            document.getElementById('trialCustomers').textContent = trialCount;
+            document.getElementById('basicCustomers').textContent = basicCount;
+            document.getElementById('proCustomers').textContent = proCount;
+            
+            // تحديث إحصائيات الحالة
+            document.getElementById('activeCustomers').textContent = activeCount;
+            document.getElementById('inactiveCustomers').textContent = inactiveCount;
+            
+            // تحديث نسب النسخ
+            const totalCustomers = snapshot.size;
+            if (totalCustomers > 0) {
+                document.getElementById('trialPercentage').style.width = `${(trialCount / totalCustomers) * 100}%`;
+                document.getElementById('basicPercentage').style.width = `${(basicCount / totalCustomers) * 100}%`;
+                document.getElementById('proPercentage').style.width = `${(proCount / totalCustomers) * 100}%`;
+            }
+        }
+        
+        // عرض رسالة تنبيه
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // إخفاء التنبيه تلقائيًا بعد 5 ثوانٍ
+            setTimeout(() => {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 5000);
+        }
+        
+        // عرض/إخفاء مؤشر التحميل
+        function showLoading(show) {
+            let loadingOverlay = document.getElementById('loadingOverlay');
+            
+            if (!loadingOverlay && show) {
+                loadingOverlay = document.createElement('div');
+                loadingOverlay.id = 'loadingOverlay';
+                loadingOverlay.className = 'loading-overlay';
+                loadingOverlay.innerHTML = `
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                `;
+                document.body.appendChild(loadingOverlay);
+            } else if (loadingOverlay && !show) {
+                loadingOverlay.remove();
+            }
+        }
     </script>
 </head>
 <body>
@@ -238,355 +651,7 @@
     <!-- الأدوات الأخرى -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script>
-        // التحقق من حالة تسجيل الدخول
-        function checkLoginStatus() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            const loginTime = localStorage.getItem('loginTime');
-            
-            // إذا لم يكن المستخدم مسجل الدخول، توجيهه إلى صفحة تسجيل الدخول
-            if (!isLoggedIn) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            // التحقق من صلاحية الجلسة (24 ساعة)
-            if (loginTime) {
-                const loginDate = new Date(loginTime);
-                const currentDate = new Date();
-                const hoursDiff = (currentDate - loginDate) / (1000 * 60 * 60);
-                
-                if (hoursDiff > 24) {
-                    // انتهت صلاحية الجلسة
-                    logout();
-                    return;
-                }
-            }
-        }
-
-        // تنفيذ التحقق من تسجيل الدخول عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', function() {
-            checkLoginStatus();
-            
-            // تهيئة البيانات التجريبية
-            initDemoData();
-        });
-        
-        // تسجيل الخروج
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('loginTime');
-            window.location.href = 'login.html';
-        }
-        
-        // تهيئة البيانات التجريبية
-        function initDemoData() {
-            // بيانات تجريبية للإصدار
-            document.getElementById('currentVersion').value = "2.1.0";
-            
-            // بيانات تجريبية للعملاء
-            displayCustomers();
-            
-            // تحديث الإحصائيات
-            updateStats();
-        }
-        
-        // عرض قائمة العملاء
-        async function displayCustomers() {
-            const tbody = document.getElementById('customersList');
-            
-            // مسح البيانات الحالية
-            tbody.innerHTML = '';
-            
-            try {
-                // جلب بيانات العملاء من Firestore
-                const customersRef = firebase.firestore().collection('customers');
-                const snapshot = await customersRef.get();
-                
-                if (snapshot.empty) {
-                    console.log('لا يوجد عملاء');
-                    // إضافة بيانات تجريبية إذا لم يكن هناك عملاء
-                    addDemoCustomers();
-                    return;
-                }
-                
-                // إضافة العملاء إلى الجدول
-                snapshot.forEach(doc => {
-                    const customer = doc.data();
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${customer.name || 'غير محدد'}</td>
-                        <td>${customer.email || 'غير محدد'}</td>
-                        <td>${customer.phone || 'غير محدد'}</td>
-                        <td><span class="badge ${customer.status === 'نشط' ? 'bg-success' : 'bg-secondary'}">${customer.status || 'غير نشط'}</span></td>
-                        <td>${customer.registrationDate ? (customer.registrationDate.toDate ? customer.registrationDate.toDate().toLocaleDateString() : new Date(customer.registrationDate).toLocaleDateString()) : 'غير محدد'}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="sendEmail('${customer.email}')">
-                                <i class="fas fa-envelope"></i>
-                            </button>
-                            <button class="btn btn-sm btn-info">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                
-                // تحديث عدد العملاء في الإحصائيات
-                document.getElementById('totalCustomers').textContent = snapshot.size;
-                
-            } catch (error) {
-                console.error("خطأ في جلب بيانات العملاء:", error);
-                // إضافة بيانات تجريبية في حالة وجود خطأ
-                addDemoCustomers();
-            }
-        }
-        
-        // إضافة بيانات تجريبية للعملاء
-        async function addDemoCustomers() {
-            const tbody = document.getElementById('customersList');
-            
-            // بيانات تجريبية للعملاء
-            const demoCustomers = [
-                { name: 'شركة الأمل للتجارة', email: 'info@alamal.com', phone: '0512345678', status: 'نشط', registrationDate: new Date(2023, 11, 15) },
-                { name: 'مؤسسة النور للمقاولات', email: 'contact@alnoor.com', phone: '0598765432', status: 'نشط', registrationDate: new Date(2023, 10, 20) },
-                { name: 'شركة الصفا للخدمات', email: 'support@alsafa.com', phone: '0555555555', status: 'غير نشط', registrationDate: new Date(2023, 9, 5) },
-                { name: 'مجموعة الفارس', email: 'info@alfaris.com', phone: '0501234567', status: 'نشط', registrationDate: new Date(2023, 8, 10) },
-                { name: 'شركة المستقبل', email: 'future@company.com', phone: '0567891234', status: 'نشط', registrationDate: new Date(2024, 0, 5) },
-                { name: 'مؤسسة الرواد', email: 'alrowad@gmail.com', phone: '0733542164', status: 'نشط', registrationDate: new Date(2024, 1, 15) },
-                { name: 'شركة الخليج للتقنية', email: 'gulf@tech.com', phone: '0733542165', status: 'نشط', registrationDate: new Date(2024, 2, 1) },
-                { name: 'مؤسسة البناء الحديث', email: 'modern@build.com', phone: '0733542166', status: 'غير نشط', registrationDate: new Date(2023, 7, 20) },
-                { name: 'شركة الأفق للاستشارات', email: 'horizon@consult.com', phone: '0733542167', status: 'نشط', registrationDate: new Date(2024, 2, 10) },
-                { name: 'مجموعة السلام التجارية', email: 'salam@trade.com', phone: '0733542168', status: 'نشط', registrationDate: new Date() }
-            ];
-            
-            // إضافة العملاء إلى الجدول
-            demoCustomers.forEach(customer => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${customer.name}</td>
-                    <td>${customer.email}</td>
-                    <td>${customer.phone}</td>
-                    <td><span class="badge ${customer.status === 'نشط' ? 'bg-success' : 'bg-secondary'}">${customer.status}</span></td>
-                    <td>${customer.registrationDate.toLocaleDateString()}</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary" onclick="sendEmail('${customer.email}')">
-                            <i class="fas fa-envelope"></i>
-                        </button>
-                        <button class="btn btn-sm btn-info">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-            
-            // محاولة إضافة البيانات التجريبية إلى Firestore
-            try {
-                const customersRef = firebase.firestore().collection('customers');
-                
-                // التحقق مما إذا كان هناك عملاء بالفعل
-                const snapshot = await customersRef.limit(1).get();
-                if (!snapshot.empty) {
-                    console.log('يوجد بالفعل عملاء في قاعدة البيانات');
-                    return;
-                }
-                
-                // إضافة البيانات التجريبية إلى Firestore
-                for (const customer of demoCustomers) {
-                    await customersRef.add(customer);
-                }
-                console.log('تمت إضافة البيانات التجريبية بنجاح');
-                
-            } catch (error) {
-                console.error("خطأ في إضافة البيانات التجريبية:", error);
-            }
-        }
-        
-        // تحديث الإحصائيات
-        async function updateStats() {
-            try {
-                // جلب بيانات العملاء من Firestore
-                const customersRef = firebase.firestore().collection('customers');
-                const snapshot = await customersRef.get();
-                
-                // إجمالي العملاء
-                const totalCustomers = snapshot.size;
-                document.getElementById('totalCustomers').textContent = totalCustomers;
-                
-                // العملاء النشطين
-                let activeCustomers = 0;
-                let newCustomers = 0;
-                
-                // تاريخ قبل 30 يومًا (للعملاء الجدد)
-                const thirtyDaysAgo = new Date();
-                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                
-                snapshot.forEach(doc => {
-                    const customer = doc.data();
-                    
-                    // حساب العملاء النشطين
-                    if (customer.status === 'نشط') {
-                        activeCustomers++;
-                    }
-                    
-                    // حساب العملاء الجدد (إذا كان هناك حقل تاريخ التسجيل)
-                    if (customer.registrationDate) {
-                        const regDate = customer.registrationDate.toDate ? customer.registrationDate.toDate() : new Date(customer.registrationDate);
-                        if (regDate > thirtyDaysAgo) {
-                            newCustomers++;
-                        }
-                    }
-                });
-                
-                // تحديث الإحصائيات في واجهة المستخدم
-                document.getElementById('activeCustomers').textContent = activeCustomers;
-                document.getElementById('newCustomers').textContent = newCustomers;
-                
-                // طلبات معلقة (قيمة تجريبية)
-                document.getElementById('pendingRequests').textContent = Math.floor(Math.random() * 10);
-                
-            } catch (error) {
-                console.error("خطأ في تحديث الإحصائيات:", error);
-                
-                // قيم افتراضية في حالة الخطأ
-                document.getElementById('totalCustomers').textContent = '0';
-                document.getElementById('activeCustomers').textContent = '0';
-                document.getElementById('newCustomers').textContent = '0';
-                document.getElementById('pendingRequests').textContent = '0';
-            }
-        }
-        
-        // إرسال رسالة لعميل واحد
-        function sendEmail(email) {
-            document.getElementById('recipientEmail').value = email;
-            const modal = new bootstrap.Modal(document.getElementById('emailModal'));
-            modal.show();
-        }
-        
-        // تحديث رقم الإصدار
-        document.getElementById('versionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const currentVersion = document.getElementById('currentVersion').value;
-            const newVersion = document.getElementById('newVersion').value;
-            const description = document.getElementById('versionDescription').value;
-            const errorDiv = document.getElementById('versionError');
-            
-            // إعادة تعيين رسائل الخطأ
-            errorDiv.textContent = '';
-            errorDiv.style.display = 'none';
-            
-            try {
-                // تحديث رقم الإصدار (محاكاة)
-                document.getElementById('currentVersion').value = newVersion;
-                
-                // عرض رسالة نجاح
-                alert('تم تحديث رقم الإصدار بنجاح');
-                this.reset();
-                document.getElementById('currentVersion').value = newVersion;
-            } catch (error) {
-                console.error('خطأ في تحديث رقم الإصدار:', error);
-                errorDiv.textContent = error.message || 'حدث خطأ أثناء تحديث رقم الإصدار';
-                errorDiv.style.display = 'block';
-            }
-        });
-        
-        // تغيير كلمة المرور
-        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const errorDiv = document.getElementById('passwordError');
-            
-            // إعادة تعيين رسائل الخطأ
-            errorDiv.textContent = '';
-            errorDiv.style.display = 'none';
-            
-            // التحقق من تطابق كلمات المرور
-            if (newPassword !== confirmPassword) {
-                errorDiv.textContent = 'كلمة المرور الجديدة وتأكيدها غير متطابقين';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // التحقق من كلمة المرور الحالية
-            if (currentPassword !== 'admin123') {
-                errorDiv.textContent = 'كلمة المرور الحالية غير صحيحة';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // عرض رسالة نجاح
-            alert('تم تغيير كلمة المرور بنجاح');
-            this.reset();
-        });
-        
-        // إرسال رسائل جماعية
-        document.getElementById('messageForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const subject = document.getElementById('messageSubject').value;
-            const content = document.getElementById('messageContent').value;
-            
-            // محاكاة إرسال الرسائل
-            alert(`تم إرسال الرسالة بنجاح إلى 132 عميل\nالموضوع: ${subject}`);
-            this.reset();
-        });
-        
-        // تصدير إلى Excel
-        async function exportToExcel() {
-            try {
-                // إنشاء جدول بيانات للتصدير
-                let csvContent = "الاسم,البريد الإلكتروني,رقم الهاتف,الحالة,تاريخ التسجيل\n";
-                
-                // جلب بيانات العملاء من Firestore
-                const customersRef = firebase.firestore().collection('customers');
-                const snapshot = await customersRef.get();
-                
-                if (snapshot.empty) {
-                    alert('لا يوجد بيانات للتصدير');
-                    return;
-                }
-                
-                // إضافة بيانات العملاء إلى ملف CSV
-                snapshot.forEach(doc => {
-                    const customer = doc.data();
-                    csvContent += `${customer.name || ''},${customer.email || ''},${customer.phone || ''},${customer.status || ''},${customer.registrationDate ? (customer.registrationDate.toDate ? customer.registrationDate.toDate().toLocaleDateString() : new Date(customer.registrationDate).toLocaleDateString()) : ''}\n`;
-                });
-                
-                // إنشاء رابط تنزيل
-                const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
-                const link = document.createElement('a');
-                link.setAttribute('href', encodedUri);
-                link.setAttribute('download', 'قائمة_العملاء_' + new Date().toLocaleDateString() + '.csv');
-                document.body.appendChild(link);
-                
-                // تنفيذ التنزيل
-                link.click();
-                document.body.removeChild(link);
-                
-                alert('تم تصدير بيانات العملاء إلى ملف Excel بنجاح');
-            } catch (error) {
-                console.error("خطأ في تصدير البيانات:", error);
-                alert('حدث خطأ أثناء تصدير البيانات');
-            }
-        }
-        
-        // نسخ رقم الإصدار
-        function copyVersion() {
-            const version = document.getElementById('currentVersion').value;
-            navigator.clipboard.writeText(version)
-                .then(() => alert('تم نسخ رقم الإصدار: ' + version))
-                .catch(err => console.error('خطأ في نسخ النص: ', err));
-        }
-        
-        // إضافة مستمع لزر تسجيل الخروج
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            logout();
-        });
-    </script>
+    <script src="js/customer-management.js"></script>
+    <script src="js/customer-functions.js"></script>
 </body>
 </html>
