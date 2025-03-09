@@ -174,7 +174,14 @@
 
     <script>
         // نظام تسجيل دخول بسيط للنسخة التجريبية
-        const ADMIN_PASSWORD = "admin123"; // كلمة المرور الافتراضية للنسخة التجريبية
+        const DEFAULT_ADMIN_PASSWORD = "admin123"; // كلمة المرور الافتراضية للنسخة التجريبية
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // التأكد من وجود كلمة مرور في التخزين المحلي، وإلا استخدام الافتراضية
+            if (!localStorage.getItem('adminPassword')) {
+                localStorage.setItem('adminPassword', DEFAULT_ADMIN_PASSWORD);
+            }
+        });
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -198,8 +205,11 @@
                 // تأخير بسيط لمحاكاة عملية التحقق
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
+                // الحصول على كلمة المرور المخزنة
+                const storedPassword = localStorage.getItem('adminPassword');
+                
                 // التحقق من كلمة المرور
-                if (password === ADMIN_PASSWORD) {
+                if (password === storedPassword) {
                     // إظهار رسالة نجاح
                     errorDiv.textContent = 'تم تسجيل الدخول بنجاح! جاري التوجيه...';
                     errorDiv.style.display = 'block';

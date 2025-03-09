@@ -70,6 +70,12 @@
             
             // تهيئة البيانات التجريبية
             initDemoData();
+            
+            // عرض قائمة العملاء
+            displayCustomers();
+            
+            // إضافة معالج حدث لنموذج تغيير كلمة المرور
+            document.getElementById('changePasswordForm').addEventListener('submit', changeAdminPassword);
         });
         
         // تسجيل الخروج
@@ -439,6 +445,71 @@
                 document.body.appendChild(loadingOverlay);
             } else if (loadingOverlay && !show) {
                 loadingOverlay.remove();
+            }
+        }
+        
+        // وظيفة تغيير كلمة مرور الأدمن
+        async function changeAdminPassword(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('passwordError');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            // إعادة تعيين رسائل الخطأ
+            errorDiv.textContent = '';
+            errorDiv.style.display = 'none';
+            
+            // تغيير نص الزر وتعطيله أثناء المعالجة
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري تغيير كلمة المرور...';
+            submitBtn.disabled = true;
+            
+            try {
+                // التحقق من تطابق كلمة المرور الجديدة مع التأكيد
+                if (newPassword !== confirmPassword) {
+                    throw new Error('كلمة المرور الجديدة وتأكيدها غير متطابقين');
+                }
+                
+                // التحقق من أن كلمة المرور الجديدة مختلفة عن الحالية
+                if (newPassword === currentPassword) {
+                    throw new Error('كلمة المرور الجديدة يجب أن تكون مختلفة عن الحالية');
+                }
+                
+                // التحقق من كلمة المرور الحالية
+                const storedPassword = localStorage.getItem('adminPassword');
+                if (currentPassword !== storedPassword) {
+                    throw new Error('كلمة المرور الحالية غير صحيحة');
+                }
+                
+                // تأخير بسيط لمحاكاة عملية المعالجة
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // حفظ كلمة المرور الجديدة
+                localStorage.setItem('adminPassword', newPassword);
+                
+                // إعادة تعيين النموذج
+                document.getElementById('changePasswordForm').reset();
+                
+                // عرض رسالة نجاح
+                showAlert('تم تغيير كلمة المرور بنجاح', 'success');
+                
+                // إعادة تعيين الزر
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                
+            } catch (error) {
+                console.error("خطأ في تغيير كلمة المرور:", error);
+                
+                // عرض رسالة الخطأ
+                errorDiv.textContent = error.message || 'حدث خطأ أثناء تغيير كلمة المرور. يرجى المحاولة مرة أخرى.';
+                errorDiv.style.display = 'block';
+                
+                // إعادة تعيين الزر
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
             }
         }
     </script>
