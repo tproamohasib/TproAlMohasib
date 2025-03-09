@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام المبرور المحاسبي TPRO</title>
-    <!-- <meta http-equiv="refresh" content="0;url=login.html"> -->
     <meta name="description" content="TPRO - نظام محاسبي متكامل لإدارة أعمال الشركات الصغيرة والمتوسطة. تتبع العملاء، وإدارة الفواتير، وتحليل الأداء بسهولة.">
     <meta name="keywords" content="نظام محاسبي, إدارة أعمال, برنامج محاسبة, تتبع العملاء, فواتير, نظام ERP">
     <meta name="author" content="TPRO Team">
@@ -26,10 +25,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
-    <!-- <script>
-        // إعادة توجيه فورية إلى صفحة تسجيل الدخول
-        window.location.href = 'login.html';
-    </script> -->
 </head>
 <body>
     <!-- القائمة العلوية -->
@@ -143,7 +138,7 @@
     </section>
 
     <!-- قسم التحديثات -->
-    <section id="updates">
+    <section id="updates" class="py-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-6">
@@ -171,7 +166,7 @@
     </section>
 
     <!-- نموذج الدعم الفني -->
-    <section id="support">
+    <section id="support" class="py-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-8">
@@ -180,27 +175,27 @@
                         <div class="card-body">
                             <form id="supportForm">
                                 <div class="mb-4">
-                                    <label for="name" class="form-label">الاسم</label>
-                                    <input type="text" class="form-control" id="name" required>
+                                    <label for="supportName" class="form-label">الاسم</label>
+                                    <input type="text" class="form-control" id="supportName" required>
                                 </div>
                                 <div class="mb-4">
-                                    <label for="email" class="form-label">البريد الإلكتروني</label>
-                                    <input type="email" class="form-control" id="email" required>
+                                    <label for="supportEmail" class="form-label">البريد الإلكتروني</label>
+                                    <input type="email" class="form-control" id="supportEmail" required>
                                 </div>
                                 <div class="mb-4">
-                                    <label for="subject" class="form-label">الموضوع</label>
-                                    <select class="form-control" id="subject" required>
-                                        <option value="">اختر نوع الطلب</option>
-                                        <option value="technical">مشكلة تقنية</option>
-                                        <option value="activation">طلب تفعيل</option>
-                                        <option value="feature">طلب إضافة ميزة</option>
-                                    </select>
+                                    <label for="supportSubject" class="form-label">الموضوع</label>
+                                    <input type="text" class="form-control" id="supportSubject" required>
                                 </div>
                                 <div class="mb-4">
-                                    <label for="message" class="form-label">الرسالة</label>
-                                    <textarea class="form-control" id="message" rows="5" required></textarea>
+                                    <label for="supportMessage" class="form-label">الرسالة</label>
+                                    <textarea class="form-control" id="supportMessage" rows="5" required></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-lg w-100">إرسال الطلب</button>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>
+                                        إرسال
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -209,157 +204,79 @@
         </div>
     </section>
 
-    <!-- قسم اتصل بنا -->
-    <section id="contact" class="py-5 bg-light">
+    <!-- قسم الاتصال -->
+    <section id="contact" class="py-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-8 text-center">
                     <h2 class="mb-5">اتصل بنا</h2>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-4 mb-4">
-                    <div class="contact-card text-center">
-                        <i class="fas fa-phone-alt mb-4"></i>
-                        <h4>اتصل بنا</h4>
-                        <p class="mb-2">خدمة العملاء: <a href="tel:+967733542164" class="text-decoration-none">00967733542164</a></p>
-                        <p>الدعم الفني: <a href="tel:+967733542164" class="text-decoration-none">00967733542164</a></p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="contact-card text-center">
-                        <i class="fas fa-envelope mb-4"></i>
-                        <h4>راسلنا</h4>
-                        <p class="mb-2">المبيعات: <a href="mailto:tproamohasib@gmail.com" class="text-decoration-none">tproamohasib@gmail.com</a></p>
-                        <p>الدعم الفني: <a href="mailto:tproamohasib@gmail.com" class="text-decoration-none">tproamohasib@gmail.com</a></p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="contact-card text-center">
-                        <i class="fas fa-map-marker-alt mb-4"></i>
-                        <h4>موقعنا</h4>
-                        <p>الجمهورية اليمنية</p>
-                        <p>تعز - الروضة</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-8 text-center">
-                    <div class="social-links">
-                        <a href="#" class="social-link" target="_blank"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="social-link" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="contact-info">
+                                <i class="fas fa-phone-alt mb-3"></i>
+                                <h4>الهاتف</h4>
+                                <p>+966 50 123 4567</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="contact-info">
+                                <i class="fas fa-envelope mb-3"></i>
+                                <h4>البريد الإلكتروني</h4>
+                                <p>info@tpro.com</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="contact-info">
+                                <i class="fas fa-map-marker-alt mb-3"></i>
+                                <h4>العنوان</h4>
+                                <p>الرياض، المملكة العربية السعودية</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- التذييل -->
+    <!-- Footer -->
     <footer class="text-center py-4">
         <div class="container">
             <p class="mb-0">&copy; 2024 نظام المبرور المحاسبي TPRO. جميع الحقوق محفوظة</p>
         </div>
     </footer>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    <script src="js/firebase-config.js"></script>
-    
-    <!-- EmailJS -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // تهيئة EmailJS
-        emailjs.init("user_your_user_id");
-
-        // معالجة نموذج التحميل
-        document.getElementById('downloadForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const customerData = {
-                name: document.getElementById('name').value,
-                companyName: document.getElementById('companyName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                downloadDate: new Date(),
-                version: 'trial'
-            };
-
-            try {
-                // تسجيل العميل في قاعدة البيانات
-                await registerCustomer(customerData);
-
-                // إرسال بريد ترحيبي
-                await emailjs.send(
-                    "service_tpro",
-                    "template_tpro",
-                    {
-                        to_name: customerData.name,
-                        to_email: customerData.email,
-                        download_link: "https://drive.google.com/uc?export=download&id=13Bh-kUH8czvpRtJR42Qice8Lb7IBtAi4"
-                    }
-                );
-
-                // بدء التحميل
-                window.location.href = "https://drive.google.com/uc?export=download&id=13Bh-kUH8czvpRtJR42Qice8Lb7IBtAi4";
-                
-                alert('تم تسجيل بياناتك بنجاح! سيبدأ التحميل تلقائياً.');
-                this.reset();
-            } catch (error) {
-                console.error('خطأ:', error);
-                alert('حدث خطأ أثناء التسجيل. الرجاء المحاولة مرة أخرى.');
+        // تغيير لون القائمة عند التمرير
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
             }
         });
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            // تأكد من تهيئة EmailJS
-            emailjs.init("TZyQK3BFL1MACjAn3");
-            console.log('EmailJS initialized');
-        })();
-    </script>
-    <script>
+        // نموذج التحميل
+        document.getElementById('downloadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            
+            alert(`شكراً ${name}! تم إرسال رابط التحميل إلى ${email}`);
+            this.reset();
+        });
+
+        // نموذج الدعم الفني
         document.getElementById('supportForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            console.log('Form submitted');
             
-            const btn = e.target.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = 'جاري الإرسال...';
-
-            const templateParams = {
-                to_name: 'فريق الدعم الفني',
-                from_name: document.getElementById('name').value,
-                message: document.getElementById('message').value
-            };
-
-            console.log('Sending email with params:', templateParams);
-
-            emailjs.send('service_y4m1c0s', 'template_fmrmykj', templateParams)
-                .then(function(response) {
-                    console.log('SUCCESS!', response.status, response.text);
-                    alert('تم إرسال طلبك بنجاح! سنتواصل معك قريباً');
-                    document.getElementById('supportForm').reset();
-                }, function(error) {
-                    console.log('FAILED...', error);
-                    alert('حدث خطأ أثناء إرسال الطلب. الخطأ: ' + JSON.stringify(error));
-                    console.error('Error details:', {
-                        status: error.status,
-                        text: error.text,
-                        name: error.name,
-                        message: error.message
-                    });
-                })
-                .finally(function() {
-                    btn.disabled = false;
-                    btn.innerHTML = 'إرسال الطلب';
-                });
+            const name = document.getElementById('supportName').value;
+            
+            alert(`شكراً ${name}! تم استلام طلب الدعم الفني وسيتم التواصل معك قريباً`);
+            this.reset();
         });
     </script>
 </body>
