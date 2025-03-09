@@ -7,6 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/firebase-config.js"></script>
+    
     <style>
         .stats-card {
             transition: transform 0.3s;
@@ -114,6 +119,7 @@
                                     <th>البريد الإلكتروني</th>
                                     <th>رقم الهاتف</th>
                                     <th>الحالة</th>
+                                    <th>تاريخ التسجيل</th>
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
@@ -279,38 +285,79 @@
             document.getElementById('currentVersion').value = "2.1.0";
             
             // بيانات تجريبية للعملاء
-            updateStats();
             displayCustomers();
-        }
-        
-        // تحديث الإحصائيات
-        function updateStats() {
-            // بيانات تجريبية للإحصائيات
-            document.getElementById('totalCustomers').textContent = '157';
-            document.getElementById('activeCustomers').textContent = '132';
-            document.getElementById('newCustomers').textContent = '24';
-            document.getElementById('pendingRequests').textContent = '8';
+            
+            // تحديث الإحصائيات
+            updateStats();
         }
         
         // عرض قائمة العملاء
-        function displayCustomers() {
+        async function displayCustomers() {
             const tbody = document.getElementById('customersList');
             
             // مسح البيانات الحالية
             tbody.innerHTML = '';
             
+            try {
+                // جلب بيانات العملاء من Firestore
+                const customersRef = firebase.firestore().collection('customers');
+                const snapshot = await customersRef.get();
+                
+                if (snapshot.empty) {
+                    console.log('لا يوجد عملاء');
+                    // إضافة بيانات تجريبية إذا لم يكن هناك عملاء
+                    addDemoCustomers();
+                    return;
+                }
+                
+                // إضافة العملاء إلى الجدول
+                snapshot.forEach(doc => {
+                    const customer = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${customer.name || 'غير محدد'}</td>
+                        <td>${customer.email || 'غير محدد'}</td>
+                        <td>${customer.phone || 'غير محدد'}</td>
+                        <td><span class="badge ${customer.status === 'نشط' ? 'bg-success' : 'bg-secondary'}">${customer.status || 'غير نشط'}</span></td>
+                        <td>${customer.registrationDate ? (customer.registrationDate.toDate ? customer.registrationDate.toDate().toLocaleDateString() : new Date(customer.registrationDate).toLocaleDateString()) : 'غير محدد'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="sendEmail('${customer.email}')">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                            <button class="btn btn-sm btn-info">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                // تحديث عدد العملاء في الإحصائيات
+                document.getElementById('totalCustomers').textContent = snapshot.size;
+                
+            } catch (error) {
+                console.error("خطأ في جلب بيانات العملاء:", error);
+                // إضافة بيانات تجريبية في حالة وجود خطأ
+                addDemoCustomers();
+            }
+        }
+        
+        // إضافة بيانات تجريبية للعملاء
+        async function addDemoCustomers() {
+            const tbody = document.getElementById('customersList');
+            
             // بيانات تجريبية للعملاء
             const demoCustomers = [
-                { name: 'شركة الأمل للتجارة', email: 'info@alamal.com', phone: '0512345678', status: 'نشط' },
-                { name: 'مؤسسة النور للمقاولات', email: 'contact@alnoor.com', phone: '0598765432', status: 'نشط' },
-                { name: 'شركة الصفا للخدمات', email: 'support@alsafa.com', phone: '0555555555', status: 'غير نشط' },
-                { name: 'مجموعة الفارس', email: 'info@alfaris.com', phone: '0501234567', status: 'نشط' },
-                { name: 'شركة المستقبل', email: 'future@company.com', phone: '0567891234', status: 'نشط' },
-                { name: 'مؤسسة الرواد', email: 'alrowad@gmail.com', phone: '0733542164', status: 'نشط' },
-                { name: 'شركة الخليج للتقنية', email: 'gulf@tech.com', phone: '0733542165', status: 'نشط' },
-                { name: 'مؤسسة البناء الحديث', email: 'modern@build.com', phone: '0733542166', status: 'غير نشط' },
-                { name: 'شركة الأفق للاستشارات', email: 'horizon@consult.com', phone: '0733542167', status: 'نشط' },
-                { name: 'مجموعة السلام التجارية', email: 'salam@trade.com', phone: '0733542168', status: 'نشط' }
+                { name: 'شركة الأمل للتجارة', email: 'info@alamal.com', phone: '0512345678', status: 'نشط', registrationDate: new Date(2023, 11, 15) },
+                { name: 'مؤسسة النور للمقاولات', email: 'contact@alnoor.com', phone: '0598765432', status: 'نشط', registrationDate: new Date(2023, 10, 20) },
+                { name: 'شركة الصفا للخدمات', email: 'support@alsafa.com', phone: '0555555555', status: 'غير نشط', registrationDate: new Date(2023, 9, 5) },
+                { name: 'مجموعة الفارس', email: 'info@alfaris.com', phone: '0501234567', status: 'نشط', registrationDate: new Date(2023, 8, 10) },
+                { name: 'شركة المستقبل', email: 'future@company.com', phone: '0567891234', status: 'نشط', registrationDate: new Date(2024, 0, 5) },
+                { name: 'مؤسسة الرواد', email: 'alrowad@gmail.com', phone: '0733542164', status: 'نشط', registrationDate: new Date(2024, 1, 15) },
+                { name: 'شركة الخليج للتقنية', email: 'gulf@tech.com', phone: '0733542165', status: 'نشط', registrationDate: new Date(2024, 2, 1) },
+                { name: 'مؤسسة البناء الحديث', email: 'modern@build.com', phone: '0733542166', status: 'غير نشط', registrationDate: new Date(2023, 7, 20) },
+                { name: 'شركة الأفق للاستشارات', email: 'horizon@consult.com', phone: '0733542167', status: 'نشط', registrationDate: new Date(2024, 2, 10) },
+                { name: 'مجموعة السلام التجارية', email: 'salam@trade.com', phone: '0733542168', status: 'نشط', registrationDate: new Date() }
             ];
             
             // إضافة العملاء إلى الجدول
@@ -321,6 +368,7 @@
                     <td>${customer.email}</td>
                     <td>${customer.phone}</td>
                     <td><span class="badge ${customer.status === 'نشط' ? 'bg-success' : 'bg-secondary'}">${customer.status}</span></td>
+                    <td>${customer.registrationDate.toLocaleDateString()}</td>
                     <td>
                         <button class="btn btn-sm btn-primary" onclick="sendEmail('${customer.email}')">
                             <i class="fas fa-envelope"></i>
@@ -332,6 +380,81 @@
                 `;
                 tbody.appendChild(row);
             });
+            
+            // محاولة إضافة البيانات التجريبية إلى Firestore
+            try {
+                const customersRef = firebase.firestore().collection('customers');
+                
+                // التحقق مما إذا كان هناك عملاء بالفعل
+                const snapshot = await customersRef.limit(1).get();
+                if (!snapshot.empty) {
+                    console.log('يوجد بالفعل عملاء في قاعدة البيانات');
+                    return;
+                }
+                
+                // إضافة البيانات التجريبية إلى Firestore
+                for (const customer of demoCustomers) {
+                    await customersRef.add(customer);
+                }
+                console.log('تمت إضافة البيانات التجريبية بنجاح');
+                
+            } catch (error) {
+                console.error("خطأ في إضافة البيانات التجريبية:", error);
+            }
+        }
+        
+        // تحديث الإحصائيات
+        async function updateStats() {
+            try {
+                // جلب بيانات العملاء من Firestore
+                const customersRef = firebase.firestore().collection('customers');
+                const snapshot = await customersRef.get();
+                
+                // إجمالي العملاء
+                const totalCustomers = snapshot.size;
+                document.getElementById('totalCustomers').textContent = totalCustomers;
+                
+                // العملاء النشطين
+                let activeCustomers = 0;
+                let newCustomers = 0;
+                
+                // تاريخ قبل 30 يومًا (للعملاء الجدد)
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                
+                snapshot.forEach(doc => {
+                    const customer = doc.data();
+                    
+                    // حساب العملاء النشطين
+                    if (customer.status === 'نشط') {
+                        activeCustomers++;
+                    }
+                    
+                    // حساب العملاء الجدد (إذا كان هناك حقل تاريخ التسجيل)
+                    if (customer.registrationDate) {
+                        const regDate = customer.registrationDate.toDate ? customer.registrationDate.toDate() : new Date(customer.registrationDate);
+                        if (regDate > thirtyDaysAgo) {
+                            newCustomers++;
+                        }
+                    }
+                });
+                
+                // تحديث الإحصائيات في واجهة المستخدم
+                document.getElementById('activeCustomers').textContent = activeCustomers;
+                document.getElementById('newCustomers').textContent = newCustomers;
+                
+                // طلبات معلقة (قيمة تجريبية)
+                document.getElementById('pendingRequests').textContent = Math.floor(Math.random() * 10);
+                
+            } catch (error) {
+                console.error("خطأ في تحديث الإحصائيات:", error);
+                
+                // قيم افتراضية في حالة الخطأ
+                document.getElementById('totalCustomers').textContent = '0';
+                document.getElementById('activeCustomers').textContent = '0';
+                document.getElementById('newCustomers').textContent = '0';
+                document.getElementById('pendingRequests').textContent = '0';
+            }
         }
         
         // إرسال رسالة لعميل واحد
@@ -414,41 +537,42 @@
         });
         
         // تصدير إلى Excel
-        function exportToExcel() {
-            // إنشاء جدول بيانات للتصدير
-            let csvContent = "الاسم,البريد الإلكتروني,رقم الهاتف,الحالة\n";
-            
-            // الحصول على بيانات العملاء
-            const demoCustomers = [
-                { name: 'شركة الأمل للتجارة', email: 'info@alamal.com', phone: '0512345678', status: 'نشط' },
-                { name: 'مؤسسة النور للمقاولات', email: 'contact@alnoor.com', phone: '0598765432', status: 'نشط' },
-                { name: 'شركة الصفا للخدمات', email: 'support@alsafa.com', phone: '0555555555', status: 'غير نشط' },
-                { name: 'مجموعة الفارس', email: 'info@alfaris.com', phone: '0501234567', status: 'نشط' },
-                { name: 'شركة المستقبل', email: 'future@company.com', phone: '0567891234', status: 'نشط' },
-                { name: 'مؤسسة الرواد', email: 'alrowad@gmail.com', phone: '0733542164', status: 'نشط' },
-                { name: 'شركة الخليج للتقنية', email: 'gulf@tech.com', phone: '0733542165', status: 'نشط' },
-                { name: 'مؤسسة البناء الحديث', email: 'modern@build.com', phone: '0733542166', status: 'غير نشط' },
-                { name: 'شركة الأفق للاستشارات', email: 'horizon@consult.com', phone: '0733542167', status: 'نشط' },
-                { name: 'مجموعة السلام التجارية', email: 'salam@trade.com', phone: '0733542168', status: 'نشط' }
-            ];
-            
-            // إضافة بيانات العملاء إلى ملف CSV
-            demoCustomers.forEach(customer => {
-                csvContent += `${customer.name},${customer.email},${customer.phone},${customer.status}\n`;
-            });
-            
-            // إنشاء رابط تنزيل
-            const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
-            const link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'قائمة_العملاء_' + new Date().toLocaleDateString() + '.csv');
-            document.body.appendChild(link);
-            
-            // تنفيذ التنزيل
-            link.click();
-            document.body.removeChild(link);
-            
-            alert('تم تصدير بيانات العملاء إلى ملف Excel بنجاح');
+        async function exportToExcel() {
+            try {
+                // إنشاء جدول بيانات للتصدير
+                let csvContent = "الاسم,البريد الإلكتروني,رقم الهاتف,الحالة,تاريخ التسجيل\n";
+                
+                // جلب بيانات العملاء من Firestore
+                const customersRef = firebase.firestore().collection('customers');
+                const snapshot = await customersRef.get();
+                
+                if (snapshot.empty) {
+                    alert('لا يوجد بيانات للتصدير');
+                    return;
+                }
+                
+                // إضافة بيانات العملاء إلى ملف CSV
+                snapshot.forEach(doc => {
+                    const customer = doc.data();
+                    csvContent += `${customer.name || ''},${customer.email || ''},${customer.phone || ''},${customer.status || ''},${customer.registrationDate ? (customer.registrationDate.toDate ? customer.registrationDate.toDate().toLocaleDateString() : new Date(customer.registrationDate).toLocaleDateString()) : ''}\n`;
+                });
+                
+                // إنشاء رابط تنزيل
+                const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+                const link = document.createElement('a');
+                link.setAttribute('href', encodedUri);
+                link.setAttribute('download', 'قائمة_العملاء_' + new Date().toLocaleDateString() + '.csv');
+                document.body.appendChild(link);
+                
+                // تنفيذ التنزيل
+                link.click();
+                document.body.removeChild(link);
+                
+                alert('تم تصدير بيانات العملاء إلى ملف Excel بنجاح');
+            } catch (error) {
+                console.error("خطأ في تصدير البيانات:", error);
+                alert('حدث خطأ أثناء تصدير البيانات');
+            }
         }
         
         // نسخ رقم الإصدار
