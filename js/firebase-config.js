@@ -10,10 +10,23 @@ var firebaseConfig = {
 };
 
 // تهيئة Firebase
-firebase.initializeApp(firebaseConfig);
+try {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    console.log("تم تهيئة Firebase بنجاح");
+} catch (error) {
+    console.error("خطأ في تهيئة Firebase:", error);
+}
 
 // تهيئة Firestore
-var db = firebase.firestore();
+var db;
+try {
+    db = firebase.firestore();
+    console.log("تم تهيئة Firestore بنجاح");
+} catch (error) {
+    console.error("خطأ في تهيئة Firestore:", error);
+}
 
 // دالة تسجيل دخول المسؤول
 function adminLogin(password) {
@@ -25,34 +38,46 @@ function adminLogin(password) {
                 return;
             }
 
+            console.log("جاري التحقق من كلمة المرور...");
+            
             // جلب بيانات المسؤول
             var adminRef = db.collection('admin').doc('credentials');
             adminRef.get().then(function(adminDoc) {
                 if (!adminDoc.exists) {
+                    console.error("لم يتم العثور على وثيقة بيانات المسؤول");
                     reject(new Error('لم يتم العثور على بيانات المسؤول'));
                     return;
                 }
                 
+                console.log("تم العثور على وثيقة بيانات المسؤول");
                 var storedPassword = adminDoc.data().password;
                 
                 // التحقق من كلمة المرور
                 if (password !== storedPassword) {
+                    console.error("كلمة المرور غير صحيحة");
                     reject(new Error('كلمة المرور غير صحيحة'));
                     return;
                 }
 
+                console.log("تم التحقق من كلمة المرور بنجاح");
+                
                 // تسجيل وقت آخر تسجيل دخول
                 adminRef.update({
                     lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(function() {
+                    console.log("تم تحديث وقت آخر تسجيل دخول");
                     resolve(true);
                 }).catch(function(error) {
-                    reject(error);
+                    console.error("خطأ في تحديث وقت آخر تسجيل دخول:", error);
+                    // نجاح تسجيل الدخول حتى لو فشل تحديث وقت آخر تسجيل دخول
+                    resolve(true);
                 });
             }).catch(function(error) {
+                console.error("خطأ في جلب بيانات المسؤول:", error);
                 reject(error);
             });
         } catch (error) {
+            console.error("خطأ غير متوقع في دالة تسجيل الدخول:", error);
             reject(error);
         }
     });
