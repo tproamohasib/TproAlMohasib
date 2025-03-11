@@ -68,9 +68,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             checkLoginStatus();
             
-            // إضافة معالج حدث لزر تسجيل الخروج
-            document.getElementById('logoutBtn').addEventListener('click', logout);
-            
             // تهيئة البيانات التجريبية
             initDemoData();
             
@@ -523,10 +520,7 @@
             // التأكد من وجود زر تسجيل الخروج وإضافة مستمع الحدث
             const logoutButton = document.getElementById('logoutBtn');
             if (logoutButton) {
-                logoutButton.addEventListener('click', function() {
-                    logout();
-                });
-                console.log("تم تفعيل زر تسجيل الخروج");
+                console.log("تم العثور على زر تسجيل الخروج");
             } else {
                 console.error("لم يتم العثور على زر تسجيل الخروج!");
             }
@@ -559,7 +553,7 @@
                         <a class="nav-link" href="#changePassword">تغيير كلمة المرور</a>
                     </li>
                 </ul>
-                <button id="logoutBtn" class="btn btn-outline-light">
+                <button id="logoutBtn" class="btn btn-outline-light" onclick="logout()">
                     <i class="fas fa-sign-out-alt me-2"></i>
                     تسجيل الخروج
                 </button>
