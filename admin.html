@@ -68,6 +68,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             checkLoginStatus();
             
+            // إضافة معالج حدث لزر تسجيل الخروج
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
             // تهيئة البيانات التجريبية
             initDemoData();
             
