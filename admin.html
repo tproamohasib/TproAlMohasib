@@ -83,6 +83,7 @@
         
         // تسجيل الخروج
         function logout() {
+            console.log("تنفيذ تسجيل الخروج...");
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('loginTime');
             window.location.href = 'login.html';
@@ -515,6 +516,21 @@
                 submitBtn.disabled = false;
             }
         }
+    </script>
+    <script>
+        // إضافة مستمع حدث لزر تسجيل الخروج بعد تحميل الصفحة
+        window.onload = function() {
+            // التأكد من وجود زر تسجيل الخروج وإضافة مستمع الحدث
+            const logoutButton = document.getElementById('logoutBtn');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    logout();
+                });
+                console.log("تم تفعيل زر تسجيل الخروج");
+            } else {
+                console.error("لم يتم العثور على زر تسجيل الخروج!");
+            }
+        };
     </script>
 </head>
 <body>
