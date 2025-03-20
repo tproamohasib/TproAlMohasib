@@ -28,23 +28,39 @@ function loadProgramScreenshots() {
     const screenshotsContainer = document.getElementById('screenshots-container');
     if (!screenshotsContainer) return;
 
+    // إضافة CSS لتحسين عرض الصور
+    const style = document.createElement('style');
+    style.textContent = `
+        .card-img-container:hover .image-overlay {
+            opacity: 1 !important;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    `;
+    document.head.appendChild(style);
+
     let html = '';
     programScreenshots.forEach((screenshot, index) => {
         const imageUrl = screenshot.path;
         html += `
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
-                <div class="card-img-container" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
-                    <img src="${imageUrl}" alt="${screenshot.title}" class="card-img-top" 
-                         style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" 
-                         onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
-                    <div class="image-overlay">
-                        <button class="view-details" onclick="showImageInModal('${imageUrl}', '${screenshot.title}')">عرض تفاصيل</button>
+                    <div class="card-img-container" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <img src="${imageUrl}" alt="${screenshot.title}" class="card-img-top" 
+                             style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                        <div class="image-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); opacity: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s;">
+                            <button class="btn btn-light" onclick="showImageInModal('${imageUrl}', '${screenshot.title}')" style="padding: 8px 15px; border-radius: 5px;">عرض</button>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">${screenshot.title}</h5>
-                </div>
+                    <div class="card-body">
+                        <h5 class="card-title">${screenshot.title}</h5>
+                    </div>
                 </div>
             </div>
         `;
