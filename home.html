@@ -256,42 +256,40 @@
         }
         
         .card-img-top {
-            border-bottom: 1px solid rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
         }
         
         .card-img-top img {
-            transition: transform 0.5s ease;
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
         }
         
-        .card-img-top:hover img {
-            transform: scale(1.05);
-        }
-        
-        .card-img-top::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.02), rgba(0,0,0,0.05));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .card-img-top:hover::after {
-            opacity: 1;
+        .image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            font-size: 1.2rem;
         }
         
         .image-overlay {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(30, 136, 229, 0.1);
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -304,20 +302,17 @@
         }
         
         .view-details {
+            padding: 8px 16px;
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 16px;
             border-radius: 4px;
-            font-size: 14px;
-            transform: translateY(20px);
-            opacity: 0;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
         
-        .card-img-top:hover .view-details {
-            transform: translateY(0);
-            opacity: 1;
+        .view-details:hover {
+            background-color: #0056b3;
         }
         
         /* تنسيقات الفوتر */
@@ -702,9 +697,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/الشاشة-الرئيسية.png" class="img-fluid" alt="الشاشة الرئيسية للبرنامج" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/الشاشة-الرئيسية.png" class="img-fluid" alt="الشاشة الرئيسية للبرنامج" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/الشاشة-الرئيسية.png', 'الشاشة الرئيسية للبرنامج')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/الشاشة-الرئيسية.png', 'الشاشة الرئيسية للبرنامج')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -716,9 +711,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/فاتورة-المبيعات.png" class="img-fluid" alt="شاشة المبيعات" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/فاتورة-المبيعات.png" class="img-fluid" alt="شاشة المبيعات" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/فاتورة-المبيعات.png', 'شاشة المبيعات')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/فاتورة-المبيعات.png', 'شاشة المبيعات')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -730,9 +725,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/إعدادات-النظام.png" class="img-fluid" alt="شاشة إدارة النظام" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/إعدادات-النظام.png" class="img-fluid" alt="شاشة إدارة النظام" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/إعدادات-النظام.png', 'شاشة إدارة النظام')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/إعدادات-النظام.png', 'شاشة إدارة النظام')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -744,9 +739,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/كرت-الصنف.png" class="img-fluid" alt="شاشة إدارة الأصناف" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/كرت-الصنف.png" class="img-fluid" alt="شاشة إدارة الأصناف" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/كرت-الصنف.png', 'شاشة إدارة الأصناف')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/كرت-الصنف.png', 'شاشة إدارة الأصناف')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -758,9 +753,9 @@
                 <div class="col-md-6 mb-4 mx-auto">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/نقاط-البيع.png" class="img-fluid" alt="شاشة نقاط البيع" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/نقاط-البيع.png" class="img-fluid" alt="شاشة نقاط البيع" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/نقاط-البيع.png', 'شاشة نقاط البيع')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/نقاط-البيع.png', 'شاشة نقاط البيع')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -775,9 +770,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/المشتريات.png" class="img-fluid" alt="شاشة المشتريات" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/المشتريات.png" class="img-fluid" alt="شاشة المشتريات" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/المشتريات.png', 'شاشة المشتريات')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/المشتريات.png', 'شاشة المشتريات')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -789,9 +784,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/تقارير.png" class="img-fluid" alt="شاشة التقارير" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/تقارير.png" class="img-fluid" alt="شاشة التقارير" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/تقارير.png', 'شاشة التقارير')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/تقارير.png', 'شاشة التقارير')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -803,9 +798,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/سندات.png" class="img-fluid" alt="شاشة السندات" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/سندات.png" class="img-fluid" alt="شاشة السندات" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/سندات.png', 'شاشة السندات')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/سندات.png', 'شاشة السندات')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -817,9 +812,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/صلاحيات-المستخدمين.png" class="img-fluid" alt="شاشة صلاحيات المستخدمين" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/صلاحيات-المستخدمين.png" class="img-fluid" alt="شاشة صلاحيات المستخدمين" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/صلاحيات-المستخدمين.png', 'شاشة صلاحيات المستخدمين')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/صلاحيات-المستخدمين.png', 'شاشة صلاحيات المستخدمين')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -834,9 +829,9 @@
                 <div class="col-md-6 mb-4 mx-auto">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/نقاط-البيع-2.png" class="img-fluid" alt="شاشة نقاط البيع المتقدمة" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/نقاط-البيع-2.png" class="img-fluid" alt="شاشة نقاط البيع المتقدمة" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/نقاط-البيع-2.png', 'شاشة نقاط البيع المتقدمة')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/نقاط-البيع-2.png', 'شاشة نقاط البيع المتقدمة')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -851,9 +846,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/إدارة-الموارد-البشرية-العملاء.png" class="img-fluid" alt="إدارة الموارد البشرية - العملاء" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/إدارة-الموارد-البشرية-العملاء.png" class="img-fluid" alt="إدارة الموارد البشرية - العملاء" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/إدارة-الموارد-البشرية-العملاء.png', 'إدارة الموارد البشرية - العملاء')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/إدارة-الموارد-البشرية-العملاء.png', 'إدارة الموارد البشرية - العملاء')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -865,9 +860,9 @@
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <img src="images/إدارة-الموارد-البشرية-المندوبين.png" class="img-fluid" alt="إدارة الموارد البشرية - المندوبين" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
+                            <img src="https://tproamohasib.github.io/TproAlMohasib/images/إدارة-الموارد-البشرية-المندوبين.png" class="img-fluid" alt="إدارة الموارد البشرية - المندوبين" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';">
                             <div class="image-overlay">
-                                <button class="view-details" onclick="openImageModal('images/إدارة-الموارد-البشرية-المندوبين.png', 'إدارة الموارد البشرية - المندوبين')">عرض تفاصيل</button>
+                                <button class="view-details" onclick="openImageModal('https://tproamohasib.github.io/TproAlMohasib/images/إدارة-الموارد-البشرية-المندوبين.png', 'إدارة الموارد البشرية - المندوبين')">عرض تفاصيل</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -998,6 +993,138 @@
     <script src="js/customer-management.js"></script>
     
     <script>
+        // معالجة الصور وإعادة المحاولة في حالة الفشل
+        document.addEventListener('DOMContentLoaded', function() {
+            // تهيئة المودال لعرض الصور
+            const imageModal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('imageModalLabel');
+            const closeModal = document.querySelector('.close-modal');
+            
+            // إغلاق المودال عند النقر على زر الإغلاق
+            if (closeModal) {
+                closeModal.addEventListener('click', function() {
+                    imageModal.style.display = 'none';
+                });
+            }
+            
+            // إغلاق المودال عند النقر خارج الصورة
+            window.addEventListener('click', function(event) {
+                if (event.target == imageModal) {
+                    imageModal.style.display = 'none';
+                }
+            });
+            
+            // فتح المودال لعرض الصورة
+            window.openImageModal = function(imageSrc, title) {
+                console.log('فتح الصورة:', imageSrc);
+                modalImage.src = imageSrc;
+                modalTitle.textContent = title;
+                imageModal.style.display = 'flex';
+            };
+            
+            // التعامل مع جميع الصور
+            const images = document.querySelectorAll('img');
+            
+            images.forEach(img => {
+                // إضافة معالج أخطاء للصور
+                img.onerror = function() {
+                    console.error('فشل تحميل الصورة:', img.src);
+                    img.src = 'https://via.placeholder.com/400x300?text=صورة+غير+متوفرة';
+                };
+                
+                // إضافة تأثير التحميل التدريجي
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 0.5s ease';
+                
+                img.onload = function() {
+                    console.log('تم تحميل الصورة بنجاح:', img.src);
+                    img.style.opacity = '1';
+                };
+            });
+        });
+        
+        // تحديث السنة في الفوتر
+        document.addEventListener('DOMContentLoaded', function() {
+            const yearElement = document.getElementById('current-year');
+            if (yearElement) {
+                yearElement.textContent = new Date().getFullYear();
+            }
+        });
+    </script>
+    
+    <!-- مودال عرض الصور -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="imageModalLabel" class="modal-title"></h5>
+                <button type="button" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" class="img-fluid" alt="صورة مكبرة">
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        /* أنماط المودال */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .close-modal {
+            color: white;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-height: 80vh;
+            overflow: auto;
+        }
+        
+        .modal-body img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+    </style>
+    
+    <script>
         // تغيير لون القائمة عند التمرير
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
@@ -1012,66 +1139,6 @@
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-        
-        // معالجة الصور وإعادة المحاولة في حالة الفشل
-        document.addEventListener('DOMContentLoaded', function() {
-            const images = document.querySelectorAll('img');
-            
-            images.forEach(img => {
-                // حفظ المسار الأصلي للصورة
-                const originalSrc = img.getAttribute('src');
-                
-                // معالجة أخطاء تحميل الصور
-                img.onerror = function() {
-                    console.error('فشل تحميل الصورة:', originalSrc);
-                    // إعادة المحاولة بإضافة علامة استفهام ورقم عشوائي لتجنب التخزين المؤقت
-                    if (!img.src.includes('placeholder')) {
-                        console.log('محاولة إعادة تحميل الصورة:', originalSrc);
-                        setTimeout(() => {
-                            img.src = originalSrc + '?v=' + Math.random();
-                        }, 1000);
-                    }
-                };
-                
-                // إضافة تأثير التحميل التدريجي للصور
-                img.style.opacity = '0';
-                img.style.transition = 'opacity 0.3s ease-in';
-                
-                img.onload = function() {
-                    console.log('تم تحميل الصورة بنجاح:', img.src);
-                    img.style.opacity = '1';
-                };
-                
-                // محاولة تحميل الصورة مباشرة
-                if (img.complete) {
-                    img.style.opacity = '1';
-                } else {
-                    // إضافة رقم عشوائي لتجنب التخزين المؤقت
-                    img.src = originalSrc + '?v=' + Math.random();
-                }
-            });
-            
-            // إظهار رسالة للمستخدم
-            console.log('تم تهيئة معالجة الصور');
-        });
-        
-        // تحديث السنة في الفوتر
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-        
-        // وظيفة زر الدردشة المباشرة
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatButton = document.querySelector('.chat-button');
-            if (chatButton) {
-                chatButton.addEventListener('click', function() {
-                    // فتح نافذة الدردشة المباشرة
-                    if (typeof Tawk_API !== 'undefined') {
-                        Tawk_API.maximize();
-                    } else {
-                        alert('خدمة الدردشة المباشرة غير متوفرة حاليًا. يرجى التواصل معنا عبر الهاتف أو البريد الإلكتروني.');
-                    }
-                });
-            }
         });
         
         // نموذج التحميل
@@ -1161,11 +1228,11 @@
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">${alt}</h5>
+                            <h5 id="imageModalLabel" class="modal-title">${alt}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <img src="${src}" class="img-fluid" alt="${alt}">
+                            <img id="modalImage" class="img-fluid" alt="${alt}" src="${src}">
                         </div>
                     </div>
                 </div>
