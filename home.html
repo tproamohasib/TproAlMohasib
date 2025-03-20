@@ -424,6 +424,27 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
+        
+        /* تنسيقات عداد الزوار */
+        .visitor-counter-box {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .visitor-counter-box:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        #hero-visitor-counter, #visitor-counter {
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -453,14 +474,14 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center">
-                    <h1 class="mb-4">نظام المبرور المحاسبي TPRO</h1>
-                    <p class="lead mb-5">نظام محاسبي متكامل يلبي جميع احتياجات شركتك</p>
-                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                        <a href="#download" class="btn btn-primary btn-lg px-4 gap-3">طلب البرنامج</a>
-                        <a href="login.html" class="btn btn-outline-light btn-lg px-4">تسجيل الدخول</a>
+                    <h1 class="hero-title mb-4">نظام المبرور المحاسبي</h1>
+                    <p class="lead mb-5">برنامج محاسبي متكامل يلبي احتياجات الشركات والمؤسسات بمختلف أحجامها</p>
+                    <div class="d-flex justify-content-center gap-3 mb-4">
+                        <a href="#download" class="btn btn-primary btn-lg">طلب البرنامج</a>
+                        <a href="#features" class="btn btn-outline-light btn-lg">تعرف على المميزات</a>
                     </div>
-                    <div class="mt-4 whatsapp-contact">
-                        <p class="text-center">يمكنك التواصل مع الاداره مباشرة باستخدام الوتس اب على الرقم <a href="https://wa.me/+967733542164" class="text-light" target="_blank"><i class="fab fa-whatsapp me-1"></i>+967733542164</a></p>
+                    <div class="visitor-counter-box p-2 d-inline-block rounded mb-3">
+                        <small class="text-light">عدد زوار الموقع: <span id="hero-visitor-counter" class="badge bg-light text-primary">جاري التحميل...</span></small>
                     </div>
                 </div>
             </div>
@@ -775,19 +796,12 @@
                         <li class="mb-2"><a href="#features" class="text-light text-decoration-none">المميزات</a></li>
                         <li class="mb-2"><a href="#screenshots" class="text-light text-decoration-none">شاشات البرنامج</a></li>
                         <li class="mb-2"><a href="#contact" class="text-light text-decoration-none">اتصل بنا</a></li>
-                        <li class="mb-2"><a href="#" class="text-light text-decoration-none">سياسة الخصوصية</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
-                    <h5 class="mb-3">تواصل معنا</h5>
-                    <p><i class="fas fa-envelope me-2"></i> tproalmohasib@gmail.com</p>
-                    <p><i class="fas fa-phone me-2"></i> +967733542164</p>
-                    <div class="social-links mt-3">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-                    </div>
+                    <h5 class="mb-3">إحصائيات الموقع</h5>
+                    <p>عدد الزوار: <span id="visitor-counter" class="badge bg-primary">جاري التحميل...</span></p>
+                    <p>آخر تحديث: <span id="last-update">2025-03-20</span></p>
                 </div>
             </div>
             <hr class="mt-4 mb-4" style="border-color: rgba(255,255,255,0.1);">
@@ -1018,5 +1032,52 @@
     
     <!-- إضافة ملف JavaScript الخاص بتحميل الصور -->
     <script src="js/image-loader.js"></script>
+    
+    <!-- كود عداد الزوار -->
+    <script>
+        // تحميل عداد الزوار
+        document.addEventListener('DOMContentLoaded', function() {
+            // استخدام CountAPI لعداد الزوار
+            const namespace = 'tproalmohasib';
+            const key = 'visitors';
+            
+            // زيادة العداد وعرض القيمة
+            fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
+                .then(response => response.json())
+                .then(data => {
+                    const visitorCounter = document.getElementById('visitor-counter');
+                    const heroVisitorCounter = document.getElementById('hero-visitor-counter');
+                    
+                    if (visitorCounter) {
+                        visitorCounter.textContent = data.value.toLocaleString('ar-SA');
+                    }
+                    
+                    if (heroVisitorCounter) {
+                        heroVisitorCounter.textContent = data.value.toLocaleString('ar-SA');
+                    }
+                })
+                .catch(error => {
+                    console.error('خطأ في تحميل عداد الزوار:', error);
+                    const visitorCounter = document.getElementById('visitor-counter');
+                    const heroVisitorCounter = document.getElementById('hero-visitor-counter');
+                    
+                    if (visitorCounter) {
+                        visitorCounter.textContent = 'غير متاح';
+                    }
+                    
+                    if (heroVisitorCounter) {
+                        heroVisitorCounter.textContent = 'غير متاح';
+                    }
+                });
+                
+            // تحديث تاريخ آخر تحديث
+            const lastUpdate = document.getElementById('last-update');
+            if (lastUpdate) {
+                const now = new Date();
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                lastUpdate.textContent = now.toLocaleDateString('ar-SA', options);
+            }
+        });
+    </script>
 </body>
 </html>
