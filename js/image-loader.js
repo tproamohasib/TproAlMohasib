@@ -66,6 +66,9 @@ const programScreenshots = [
     }
 ];
 
+// متغير عالمي لتخزين فهرس الصورة الحالية
+let currentImageIndex = 0;
+
 // تهيئة عرض الصور عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
     // تهيئة المودال لعرض الصور
@@ -81,6 +84,8 @@ function initializeImageModal() {
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('imageModalLabel');
     const closeModal = document.querySelector('.close-modal');
+    const prevButton = document.getElementById('prevImage');
+    const nextButton = document.getElementById('nextImage');
     
     // إغلاق المودال عند النقر على زر الإغلاق
     if (closeModal) {
@@ -96,13 +101,87 @@ function initializeImageModal() {
         }
     });
     
+    // إغلاق المودال عند الضغط على زر ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && imageModal.style.display === 'flex') {
+            imageModal.style.display = 'none';
+        }
+        
+        // التنقل بين الصور باستخدام أزرار الأسهم
+        if (imageModal.style.display === 'flex') {
+            if (event.key === 'ArrowLeft') {
+                showNextImage();
+            } else if (event.key === 'ArrowRight') {
+                showPrevImage();
+            }
+        }
+    });
+    
+    // تهيئة أزرار التنقل
+    if (prevButton) {
+        prevButton.addEventListener('click', showPrevImage);
+    }
+    
+    if (nextButton) {
+        nextButton.addEventListener('click', showNextImage);
+    }
+    
     // فتح المودال لعرض الصورة
     window.openImageModal = function(imageSrc, title) {
         console.log('فتح الصورة:', imageSrc);
+        
+        // تحديد فهرس الصورة الحالية
+        const imagePath = imageSrc.split('/').pop();
+        currentImageIndex = programScreenshots.findIndex(img => img.path === imagePath);
+        
+        if (currentImageIndex === -1) {
+            currentImageIndex = 0;
+        }
+        
         modalImage.src = imageSrc;
         modalTitle.textContent = title;
         imageModal.style.display = 'flex';
+        
+        // تحديث حالة أزرار التنقل
+        updateNavigationButtons();
     };
+    
+    // عرض الصورة السابقة
+    function showPrevImage() {
+        if (currentImageIndex > 0) {
+            currentImageIndex--;
+            updateModalImage();
+        }
+    }
+    
+    // عرض الصورة التالية
+    function showNextImage() {
+        if (currentImageIndex < programScreenshots.length - 1) {
+            currentImageIndex++;
+            updateModalImage();
+        }
+    }
+    
+    // تحديث الصورة المعروضة في المودال
+    function updateModalImage() {
+        const screenshot = programScreenshots[currentImageIndex];
+        const imagePath = `images/${screenshot.path}`;
+        const imageUrl = new URL(imagePath, window.location.href).href;
+        
+        modalImage.src = imageUrl;
+        modalTitle.textContent = screenshot.title;
+        
+        // تحديث حالة أزرار التنقل
+        updateNavigationButtons();
+    }
+    
+    // تحديث حالة أزرار التنقل
+    function updateNavigationButtons() {
+        if (prevButton && nextButton) {
+            prevButton.disabled = currentImageIndex === 0;
+            nextButton.disabled = currentImageIndex === programScreenshots.length - 1;
+        }
+    }
 }
 
 // تحميل صور شاشات البرنامج
