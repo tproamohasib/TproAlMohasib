@@ -84,12 +84,20 @@ function initializeImageModal() {
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('imageModalLabel');
     const closeModal = document.querySelector('.close-modal');
+    const closeModalCorner = document.querySelector('.close-modal-corner');
     const prevButton = document.getElementById('prevImage');
     const nextButton = document.getElementById('nextImage');
     
     // إغلاق المودال عند النقر على زر الإغلاق
     if (closeModal) {
         closeModal.addEventListener('click', function() {
+            imageModal.style.display = 'none';
+        });
+    }
+    
+    // إغلاق المودال عند النقر على زر الإغلاق في الزاوية العليا اليمنى
+    if (closeModalCorner) {
+        closeModalCorner.addEventListener('click', function() {
             imageModal.style.display = 'none';
         });
     }
