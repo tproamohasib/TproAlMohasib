@@ -440,6 +440,29 @@
             transform: translateY(-2px);
         }
         
+        .counter-img {
+            vertical-align: middle;
+            margin-right: 5px;
+            height: 30px;
+            border-radius: 4px;
+        }
+        
+        .visitor-counter-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .visitor-counter-container p {
+            margin: 0;
+            font-weight: bold;
+        }
+        
         #hero-visitor-counter, #visitor-counter {
             font-weight: bold;
             font-size: 1.2rem;
@@ -485,7 +508,10 @@
                         <a href="#features" class="btn btn-outline-light btn-lg">تعرف على المميزات</a>
                     </div>
                     <div class="visitor-counter-box p-2 d-inline-block rounded mb-3">
-                        <small class="text-light">عدد زوار الموقع: <span id="hero-visitor-counter" class="badge bg-light text-primary">جاري التحميل...</span></small>
+                        <small class="text-light">عدد زوار الموقع: </small>
+                        <a href="https://www.freecounterstat.com" title="website counter" class="d-inline-block">
+                            <img src="https://counter9.stat.ovh/private/freecounterstat.php?c=2ycjmfmkxlxg7rnbx1qlw3h8rnj7jtqe" border="0" title="website counter" alt="website counter" class="counter-img">
+                        </a>
                     </div>
                 </div>
             </div>
@@ -658,7 +684,7 @@
                             </ul>
                             <div class="download-options">
                                 <a href="https://drive.google.com/file/d/1E2jUGsoWS7Lbp3NUiVvqIua_XDZ3AgqV/view?usp=drive_link" 
-                                   class="btn btn-success btn-lg w-100" 
+                                   class="btn btn-success btn-lg" 
                                    target="_blank">
                                     <i class="fas fa-download"></i> تحميل التحديث الجديد
                                 </a>
@@ -804,7 +830,12 @@
                 </div>
                 <div class="col-md-4">
                     <h5 class="mb-3">إحصائيات الموقع</h5>
-                    <p>عدد الزوار: <span id="visitor-counter" class="badge bg-primary">جاري التحميل...</span></p>
+                    <div class="visitor-counter-container">
+                        <p>عدد الزوار:</p>
+                        <a href="https://www.freecounterstat.com" title="website counter">
+                            <img src="https://counter9.stat.ovh/private/freecounterstat.php?c=2ycjmfmkxlxg7rnbx1qlw3h8rnj7jtqe" border="0" title="website counter" alt="website counter">
+                        </a>
+                    </div>
                     <p>آخر تحديث: <span id="last-update">2025-03-20</span></p>
                 </div>
             </div>
@@ -899,7 +930,7 @@
             </div>
             <div class="modal-body" style="padding: 15px; display: flex; justify-content: center; align-items: center; height: calc(90vh - 130px); overflow: auto; position: relative;">
                 <button id="prevImage" class="nav-button prev-button" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background-color: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; z-index: 10;">&#10094;</button>
-                <img id="modalImage" src="" alt="صورة موسعة" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                <img id="modalImage" class="img-fluid" alt="صورة موسعة" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                 <button id="nextImage" class="nav-button next-button" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background-color: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; z-index: 10;">&#10095;</button>
             </div>
         </div>
@@ -992,42 +1023,8 @@
     <script>
         // تحميل عداد الزوار
         document.addEventListener('DOMContentLoaded', function() {
-            // استخدام localStorage لتخزين عدد الزوار محليًا
+            // استخدام عداد زوار حقيقي
             function updateVisitorCount() {
-                // الحصول على عدد الزوار المخزن مسبقًا
-                let visitorCount = localStorage.getItem('tproVisitorCount');
-                
-                // إذا لم يكن هناك عدد مخزن، نبدأ من 1000
-                if (!visitorCount) {
-                    visitorCount = 1000;
-                } else {
-                    // تحويل القيمة إلى رقم
-                    visitorCount = parseInt(visitorCount);
-                }
-                
-                // التحقق مما إذا كان المستخدم قد زار الموقع اليوم
-                const lastVisit = localStorage.getItem('tproLastVisit');
-                const today = new Date().toDateString();
-                
-                if (lastVisit !== today) {
-                    // إذا لم يزر المستخدم الموقع اليوم، نزيد العداد
-                    visitorCount++;
-                    localStorage.setItem('tproVisitorCount', visitorCount);
-                    localStorage.setItem('tproLastVisit', today);
-                }
-                
-                // عرض عدد الزوار
-                const visitorCounter = document.getElementById('visitor-counter');
-                const heroVisitorCounter = document.getElementById('hero-visitor-counter');
-                
-                if (visitorCounter) {
-                    visitorCounter.textContent = visitorCount.toLocaleString('ar-SA');
-                }
-                
-                if (heroVisitorCounter) {
-                    heroVisitorCounter.textContent = visitorCount.toLocaleString('ar-SA');
-                }
-                
                 // تحديث تاريخ آخر تحديث
                 const lastUpdate = document.getElementById('last-update');
                 if (lastUpdate) {
@@ -1041,6 +1038,11 @@
             updateVisitorCount();
         });
     </script>
+    
+    <!-- إضافة عداد Flag Counter -->
+    <a href="https://info.flagcounter.com/tpro" target="_blank">
+        <img src="https://s11.flagcounter.com/count2/tpro/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_10/viewers_0/labels_0/pageviews_1/flags_0/percent_0/" alt="Flag Counter" border="0" class="mt-2">
+    </a>
     
     <!-- كود الدردشة المباشرة -->
     <script type="text/javascript">
