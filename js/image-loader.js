@@ -25,7 +25,7 @@ function loadProgramScreenshots() {
     ];
 
     // عرض الصور في القسم المخصص
-    const screenshotsContainer = document.getElementById('programScreenshots');
+    const screenshotsContainer = document.getElementById('screenshots-container');
     if (!screenshotsContainer) return;
 
     let html = '';
@@ -67,7 +67,8 @@ function showImageInModal(imageSrc, title) {
     imageModal.style.display = 'block';
     
     // تحديث الصورة الحالية في قائمة الصور
-    currentImageIndex = programScreenshots.findIndex(img => img.path === imageSrc);
+    const imagePath = imageSrc.split('/').pop();
+    currentImageIndex = programScreenshots.findIndex(img => img.path.includes(imagePath));
     
     // تحديث حالة أزرار التنقل
     updateNavigationButtons();
