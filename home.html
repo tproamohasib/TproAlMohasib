@@ -431,6 +431,8 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             transition: all 0.3s ease;
+            padding: 10px;
+            display: inline-block;
         }
         
         .visitor-counter-box:hover {
@@ -440,10 +442,12 @@
         
         #hero-visitor-counter, #visitor-counter {
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.2rem;
             padding: 4px 8px;
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            background-color: var(--primary-color);
         }
     </style>
 </head>
@@ -984,6 +988,60 @@
         }
     </style>
     
+    <!-- كود عداد الزوار -->
+    <script>
+        // تحميل عداد الزوار
+        document.addEventListener('DOMContentLoaded', function() {
+            // استخدام localStorage لتخزين عدد الزوار محليًا
+            function updateVisitorCount() {
+                // الحصول على عدد الزوار المخزن مسبقًا
+                let visitorCount = localStorage.getItem('tproVisitorCount');
+                
+                // إذا لم يكن هناك عدد مخزن، نبدأ من 1000
+                if (!visitorCount) {
+                    visitorCount = 1000;
+                } else {
+                    // تحويل القيمة إلى رقم
+                    visitorCount = parseInt(visitorCount);
+                }
+                
+                // التحقق مما إذا كان المستخدم قد زار الموقع اليوم
+                const lastVisit = localStorage.getItem('tproLastVisit');
+                const today = new Date().toDateString();
+                
+                if (lastVisit !== today) {
+                    // إذا لم يزر المستخدم الموقع اليوم، نزيد العداد
+                    visitorCount++;
+                    localStorage.setItem('tproVisitorCount', visitorCount);
+                    localStorage.setItem('tproLastVisit', today);
+                }
+                
+                // عرض عدد الزوار
+                const visitorCounter = document.getElementById('visitor-counter');
+                const heroVisitorCounter = document.getElementById('hero-visitor-counter');
+                
+                if (visitorCounter) {
+                    visitorCounter.textContent = visitorCount.toLocaleString('ar-SA');
+                }
+                
+                if (heroVisitorCounter) {
+                    heroVisitorCounter.textContent = visitorCount.toLocaleString('ar-SA');
+                }
+                
+                // تحديث تاريخ آخر تحديث
+                const lastUpdate = document.getElementById('last-update');
+                if (lastUpdate) {
+                    const now = new Date();
+                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    lastUpdate.textContent = now.toLocaleDateString('ar-SA', options);
+                }
+            }
+            
+            // تنفيذ الدالة لتحديث العداد
+            updateVisitorCount();
+        });
+    </script>
+    
     <!-- كود الدردشة المباشرة -->
     <script type="text/javascript">
         var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
@@ -1032,52 +1090,5 @@
     
     <!-- إضافة ملف JavaScript الخاص بتحميل الصور -->
     <script src="js/image-loader.js"></script>
-    
-    <!-- كود عداد الزوار -->
-    <script>
-        // تحميل عداد الزوار
-        document.addEventListener('DOMContentLoaded', function() {
-            // استخدام CountAPI لعداد الزوار
-            const namespace = 'tproalmohasib';
-            const key = 'visitors';
-            
-            // زيادة العداد وعرض القيمة
-            fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
-                .then(response => response.json())
-                .then(data => {
-                    const visitorCounter = document.getElementById('visitor-counter');
-                    const heroVisitorCounter = document.getElementById('hero-visitor-counter');
-                    
-                    if (visitorCounter) {
-                        visitorCounter.textContent = data.value.toLocaleString('ar-SA');
-                    }
-                    
-                    if (heroVisitorCounter) {
-                        heroVisitorCounter.textContent = data.value.toLocaleString('ar-SA');
-                    }
-                })
-                .catch(error => {
-                    console.error('خطأ في تحميل عداد الزوار:', error);
-                    const visitorCounter = document.getElementById('visitor-counter');
-                    const heroVisitorCounter = document.getElementById('hero-visitor-counter');
-                    
-                    if (visitorCounter) {
-                        visitorCounter.textContent = 'غير متاح';
-                    }
-                    
-                    if (heroVisitorCounter) {
-                        heroVisitorCounter.textContent = 'غير متاح';
-                    }
-                });
-                
-            // تحديث تاريخ آخر تحديث
-            const lastUpdate = document.getElementById('last-update');
-            if (lastUpdate) {
-                const now = new Date();
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                lastUpdate.textContent = now.toLocaleDateString('ar-SA', options);
-            }
-        });
-    </script>
 </body>
 </html>
