@@ -10,12 +10,18 @@ let currentImageIndex = 0;
 function loadProgramScreenshots() {
     // بيانات الصور
     programScreenshots = [
-        { path: 'images/screenshots/screenshot1.jpg', title: 'شاشة تسجيل الدخول' },
-        { path: 'images/screenshots/screenshot2.jpg', title: 'الشاشة الرئيسية' },
-        { path: 'images/screenshots/screenshot3.jpg', title: 'شاشة إدارة الحسابات' },
-        { path: 'images/screenshots/screenshot4.jpg', title: 'شاشة التقارير' },
-        { path: 'images/screenshots/screenshot5.jpg', title: 'شاشة المستخدمين' },
-        { path: 'images/screenshots/screenshot6.jpg', title: 'شاشة الإعدادات' }
+        { path: 'images/الشاشة-الرئيسية.png', title: 'الشاشة الرئيسية للبرنامج' },
+        { path: 'images/فاتورة-المبيعات.png', title: 'شاشة المبيعات' },
+        { path: 'images/إعدادات-النظام.png', title: 'شاشة إدارة النظام' },
+        { path: 'images/كرت-الصنف.png', title: 'شاشة إدارة الأصناف' },
+        { path: 'images/نقاط-البيع.png', title: 'شاشة نقاط البيع' },
+        { path: 'images/المشتريات.png', title: 'شاشة المشتريات' },
+        { path: 'images/تقارير.png', title: 'شاشة التقارير' },
+        { path: 'images/سندات.png', title: 'شاشة السندات' },
+        { path: 'images/صلاحيات-المستخدمين.png', title: 'شاشة صلاحيات المستخدمين' },
+        { path: 'images/نقاط-البيع-2.png', title: 'شاشة نقاط البيع المتقدمة' },
+        { path: 'images/إدارة-الموارد-البشرية-العملاء.png', title: 'إدارة الموارد البشرية - العملاء' },
+        { path: 'images/إدارة-الموارد-البشرية-المندوبين.png', title: 'إدارة الموارد البشرية - المندوبين' }
     ];
 
     // عرض الصور في القسم المخصص
