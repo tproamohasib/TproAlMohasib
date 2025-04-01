@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteRule ^home\.html$ https://almabroralmohasbi.netlify.app [R=301,L]
+RewriteRule ^admin\.html$ https://almabroralmohasbi.netlify.app/admin.html [R=301,L]
+RewriteRule ^login\.html$ https://almabroralmohasbi.netlify.app/login.html [R=301,L]
